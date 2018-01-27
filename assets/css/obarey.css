@@ -49,13 +49,16 @@
 	width:500px;
 	height:500px;
 	position:relative;
+	margin:0 auto;
 }
 
 .siyah_granit {
-	background:url('../images/granit_bg_1.png');
+	background-repeat:repeat;
+	background:url('../../images/granit_texture.png');
 }
 .beyaz_mermer {
-	background:url('../images/mermer_bg_1.png');
+	background-repeat:repeat;
+	background:url('../../images/mermer_texture.png');
 }
 
 .editor-item-list{
@@ -84,27 +87,11 @@
     top:0;
     left:0;
 }
-.added-item i[action="sil"]{
-	color:red;
-}
-.added-item i[action="cevir"]{
-	color:#8c8cff;
-}
-
-.added-item.rotated {
-	transform: rotate(90deg);
-}
 
 .editor-item i{
 	display:none;
 }
-.added-item i {
-	display:inline-block;
-	opacity:0.4;
-}
-.added-item i:hover {
-	opacity:1;
-}
+
 
 .editor-item img,
 .added-item img {
@@ -185,6 +172,8 @@
 	width:327px !important;
 	border-radius: 0 0 50% 50% !important;
 }
+
+
 .porselen-draggable {
 	position:relative;
 	z-index:999;
@@ -283,4 +272,303 @@
 }
 .sip-form label {
 	font-size:10px !important;
+}
+
+#porselen_resim_modal img {
+	width:100%;
+}
+#porselen_resim_modal .prev-part{
+	width:50px;
+    margin: 0 auto;
+	padding:5px 0;
+}
+#porselen_resim_modal .title-part{
+    text-align: center;
+    background: #f5f5f5;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 2px 0;
+}
+#porselen_resim_modal .nav-part {
+	text-align:center;
+	padding:5px 0;
+}
+#porselen_resim_modal .form-part {
+	
+}
+#porselen_resim_modal .form-part .form-control {
+    height: 23px !important;
+    padding: 3px 11px !important;
+    font-size: 12px !important;
+}
+#porselen_resim_modal .porselen-secim-item{
+	border:1px solid #f7f7f7;
+	margin-bottom:5px;
+}
+
+.porselen-template {
+	position: absolute;
+    left: 0;
+    top: 0;
+   
+}
+
+.porselen-template.oval-seri-item{
+	
+}
+.porselen-template.oval-seri-item img,
+.porselen-template.dikdortgen-seri-item img,
+.porselen-template.kubbe-seri-item img,
+.porselen-template.kare-seri-item img,
+.porselen-template.daire-seri-item img,
+.porselen-template.kalp-seri-item img {
+	width:100%;
+ 	cursor:move;
+}
+
+.porselen-gruplar .input-group {
+	display:inline-block;
+	width:100px;
+}
+.porselen-gruplar .input-group-addon {
+	padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    color: #555;
+    text-align: center;
+    background-color: #eee;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+}
+
+.tas i[action="sil"]{
+	color:red;
+}
+.tas i[action="cevir"]{
+	color:#8c8cff;
+}
+
+.tas i[ebat-bool="1"]{
+	color:#8c8cff;
+}
+.tas i[ebat-bool="0"]{
+	color:red;
+}
+
+.rotated {
+	transform: rotate(90deg);
+}
+
+.tas i{
+	display:none;
+}
+.tas i {
+	display:inline-block;
+	opacity:0.4;
+	cursor:pointer;
+}
+.tas i:hover {
+	opacity:1;
+	
+}
+.porselen-id-info{
+	display: block;
+    width: 45px;
+    font-size: 11px;
+    font-weight: 600;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -25px;
+    margin-top: 12px;
+    cursor: move;
+}
+.engrave-id-info {
+	display: block;
+    width: 45px;
+    font-size: 11px;
+    font-weight: 600;
+    position: absolute;
+    left: 0;
+    top: -17px;
+    cursor: move;
+}
+.siyah_granit .engrave-id-info {
+	background:white;
+}
+.beyaz_mermer .engrave-id-info {
+	background:black;
+	color:white;
+}
+.engrave_template,
+.yazi_template {
+	cursor:move;
+}
+.engrave_template img {
+	width:100%;
+	cursor:move;
+	border: 1px solid #737373;
+	-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+    filter: grayscale(100%);
+}
+
+.yazi_template img {
+	width:100%;
+	cursor:move;
+	border: 1px solid #3c3c3c;
+}
+
+
+/* AH EDITOR STILLER */
+.ah-editor-form {
+
+	border:1px solid #d2d2d2;
+
+}
+
+.ah-editor-form .preview-cont {
+	border-bottom:1px solid #d2d2d2;
+}
+
+.ah-editor-form .preview-cont img {
+	display:block;
+	max-width:100%;
+	margin:0 auto;
+}
+
+.preview-cont .preview-info {
+	text-align:right;
+	padding:5px 5px 5px 0;
+	font-size:12px;
+}
+
+.ah-editor-form .form-cont {
+	padding:5px;
+}
+
+.ah-editor-form input.editor-text {
+	display:block;
+	width:85%;
+	margin:0 auto;
+	text-align:center;
+	padding:8px 0;
+	border:1px solid #d2d2d2;
+	box-shadow: inset 1px 1px 1px #d3d3d3;
+	border-radius:2px;
+}
+
+.ah-editor-form .form-cont .input-grup {
+	margin:0 auto;
+}
+
+
+@media (max-width:450px) {
+	.ah-editor-form .input-grup  > div {
+		width:auto !important;
+	}
+	.ah-editor-form .editor-font-label {
+		float: none !important;
+    	margin: 0 auto;
+    	width:auto;
+	}
+}
+
+.form-cont select {
+	width:100%;
+/*	border:1px solid #d2d2d2;*/
+	padding:3px 0 3px 5px;
+	margin-top:8px;
+	border-radius:2px;
+	font-size:13px;
+}
+
+.input-grup .control-notf {
+	display:none;
+	font-size:11px;
+	color:red;
+	padding-top:3px;
+}
+
+/* AH EDITOR FONT SELECT */
+
+.font-select {
+	height:30px;
+	box-shadow:0 1px 1px 0 rgba(0,0,0,0.2);
+	border:1px solid #fff;
+	width:100%;	
+	position:relative;
+	margin-top:8px;
+}
+
+.font-select a.font-selected{
+	/*padding:5px;*/
+	position:relative;
+    top:2px;
+	display:block;
+	width:100%;
+}
+
+.font-select a.font-selected:after{
+	position:absolute;
+    right:0;
+    top:0;
+	width:10px;
+	height:10px;
+	display:block;
+	content:"";
+    background: url('../../images/20x20_icon_sprite.png');
+    background-position: 95px -24px;
+    float: right;
+    margin: 5px 6px 0 0;
+}
+
+.font-select a.font-selected img {
+	max-height:25px;
+}
+
+.font-select ul.open {
+	display:block !important;
+}
+
+.font-select ul {
+	display:none;
+	position:absolute;
+	top:34px;
+	left:-1px;
+	width:100%;
+	max-height:300px;
+	overflow-y:auto;
+	border:1px solid #d2d2d2;
+	/*border-top:none;*/
+	background:white;
+	list-style:none;
+	padding:0;
+	z-index:1000;
+	box-shadow:-1px 3px 10px #d3d3d3,
+				1px 3px 10px #d3d3d3;
+}
+
+.font-select ul li:hover {
+	background:#fafafa;
+}
+
+.font-select ul li {
+	cursor:pointer;
+}
+
+.font-select ul li.selected {
+	background:#F2EDE3;
+}
+
+.font-select ul li img {
+	display:block;
+	padding:2px;
+	max-height:25px;
+
+}
+
+.font-select label{
+	width:50px;
+	font-size:12px;
 }

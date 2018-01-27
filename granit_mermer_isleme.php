@@ -9,103 +9,82 @@
 
 <div class="row">
 
-  <a href="<?php echo URL_ILETISIM ?>?konu=Porselen Baskı" class="btn btn-primary" title=""> Bizimle İletişime Geçin</a>
-
-  <div class="col-xs-12 col-md-12 col-sm-12">
+ 
+  <div class="col-xs-12 col-md-8 col-sm-12">
     <div class="section-container-spacer">
         <h1>Granit - Mermer İşleme</h1>
         <p>Editörümüzle nasıl birşey istediğinize karar verin veya direk bizimle iletişime geçin.</p>
     </div>
 
 
+    <iframe src="mezar_tasi_editor.php" id="editor_frame"></iframe>
 
-    <div class="col-xs-12 col-sm-12 col-md-6">
+  </div>
 
-     
+  <div class="col-xs-12 col-md-4 col-sm-12">
 
+
+    <!--<div class="col-xs-12 col-sm-12 col-md-6">
             <div class="tas siyah_granit">
 
 
             </div>
-
-      
-
-
     </div>
 
     <div class="col-xs-12 col-sm-12 col-md-6">
-
         <div class="editor-item-list clearfix">
-
-                
-                  <div class="editor-item list-toggle" data-toggle="tooltip" title="Bismillahirrahmanirrahim Altın" >
-                      <img src="assets/images/bsm_altin.png" />
-                      <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
-                      <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
-                  </div>
-                
-
-                
-                  <div class="editor-item list-toggle"  data-toggle="tooltip" title="Bismillahirrahmanirrahim Siyah">
-                      <img src="assets/images/bsm_siyah.png" />
-                      <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
-                      <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
-                  </div>
-
-                  <div class="editor-item list-toggle"  data-toggle="tooltip" title="Bismillahirrahmanirrahim Beyaz">
-                      <img src="assets/images/bsm_beyaz.png" />
-                      <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
-                      <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
-                  </div>
-               
-               
-               
-                  <div class="editor-item list-toggle"  data-toggle="tooltip" title="Porselen Oval">
-                      <img src="assets/images/porselen_oval.png" />
-                      <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
-                      <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
-                  </div>
-
-                  <div class="editor-item list-toggle"  data-toggle="tooltip" title="Porselen Daire">
-                      <img src="assets/images/porselen_daire.png" />
-                      <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
-                      <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
-                  </div>
-
-                  <div class="editor-item list-toggle"  data-toggle="tooltip" title="Porselen Dikdörtgen">
-                      <img src="assets/images/porselen_dikdortgen.png" />
-                      <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
-                      <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
-                  </div>
-
-                  <div class="editor-item list-toggle"  data-toggle="tooltip" title="Porselen Kare">
-                      <img src="assets/images/porselen_kare.png" />
-                      <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
-                      <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
-                  </div>
-
-                    <div class="editor-item list-toggle"  data-toggle="tooltip" title="Porselen Kalp">
-                      <img src="assets/images/porselen_kalp.png" />
-                      <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
-                      <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
-                  </div>
-
-                   <div class="editor-item list-toggle"  data-toggle="tooltip" title="Porselen Oval Kubbe">
-                      <img src="assets/images/porselen_kubbe.png" />
-                      <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
-                      <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
-                  </div>
-
-
-
+            <div class="editor-item list-toggle" data-toggle="tooltip" title="Bismillahirrahmanirrahim Altın" >
+                <img src="assets/images/bsm_altin.png" />
+                <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
+                <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
+            </div>
+            <div class="editor-item list-toggle"  data-toggle="tooltip" title="Bismillahirrahmanirrahim Siyah">
+                <img src="assets/images/bsm_siyah.png" />
+                <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
+                <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
+            </div>
+            <div class="editor-item list-toggle"  data-toggle="tooltip" title="Bismillahirrahmanirrahim Beyaz">
+                <img src="assets/images/bsm_beyaz.png" />
+                <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
+                <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
+            </div>
+            <div class="editor-item list-toggle"  data-toggle="tooltip" title="Porselen Oval">
+                <img src="assets/images/porselen_oval.png" />
+                <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
+                <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
+            </div>
+            <div class="editor-item list-toggle"  data-toggle="tooltip" title="Porselen Daire">
+                <img src="assets/images/porselen_daire.png" />
+                <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
+                <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
+            </div>
+            <div class="editor-item list-toggle"  data-toggle="tooltip" title="Porselen Dikdörtgen">
+                <img src="assets/images/porselen_dikdortgen.png" />
+                <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
+                <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
+            </div>
+            <div class="editor-item list-toggle"  data-toggle="tooltip" title="Porselen Kare">
+                <img src="assets/images/porselen_kare.png" />
+                <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
+                <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
+            </div>
+              <div class="editor-item list-toggle"  data-toggle="tooltip" title="Porselen Kalp">
+                <img src="assets/images/porselen_kalp.png" />
+                <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
+                <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
+            </div>
+             <div class="editor-item list-toggle"  data-toggle="tooltip" title="Porselen Oval Kubbe">
+                <img src="assets/images/porselen_kubbe.png" />
+                <i class="fa fa-remove editor-action" action="sil" title="Sil"></i>
+                <i class="fa fa-refresh editor-action" action="cevir" title="Çevir"></i>
+            </div>
         </div>
-
-    </div>
-
-    
+    </div> -->
 
     
+
     
+  
 
   </div>
   

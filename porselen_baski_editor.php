@@ -107,6 +107,7 @@
          <div class="porselen-crop-container oval" activeclass="oval">
             <div id="porselen-draggable">
                <img id="uploaded" class="img-responsive" alt="" src="">
+
             </div>
          </div>
       </div>
@@ -121,6 +122,7 @@
              <button class="btn btn-sm btn-danger grup-btn"  seri="dikdortgen"><i class="fa fa-angle-double-right"></i> Dikdörtgen</button>
              <button class="btn btn-sm btn-danger grup-btn"  seri="daire"><i class="fa fa-angle-double-right"></i> Daire</button>
              <button class="btn btn-sm btn-danger grup-btn"  seri="kubbe"><i class="fa fa-angle-double-right"></i> Oval Kubbe</button>
+             <!-- <button class="btn btn-sm btn-danger grup-btn"  seri="kalp"><i class="fa fa-angle-double-right"></i> Kalp</button> -->
          </div>
          
          <!-- <button class="btn btn-sm btn-danger" id="ayar-btn" seri="kalp">Kalp</button> -->
@@ -216,7 +218,9 @@
          </div>
       </div>
 
-      <script>
+</svg> 
+
+      <script>  
          $(document).ready(function(){
 
                // editor de çeşitli hareketler yaptiysa kullanici, kesim modunu baslatiyoruz
@@ -364,7 +368,7 @@
                if( duzenleme ){
                     PamiraNotify("warning", "Lütfen bekleyin", "Sipariş verisi indiriliyor." );
                     REQ.ACTION("", {req:"data_download"}, function(res){
-                        console.log(res);
+                        //console.log(res);
                         var js_data = JSON.parse(res.data.edit_data);
                         //console.log(js_data);
                         kesim_baslat();

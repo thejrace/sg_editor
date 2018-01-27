@@ -1,0 +1,44 @@
+{
+	"tas":"siyah_granit",
+	"tas_ebat":{"w":50, "h":50 },
+
+
+	"porselenler":{
+		"POR0": {
+			"item_index":"POR0",
+			"seri":"oval-seri",
+			"ebat":"11x15",
+			"rotated":false,
+			"top":0,
+			"left":0
+		}
+	},
+
+	"engraveler":{
+		"ENG0":{
+			"item_index":"ENG0",
+			"file":"files[]",
+			"cropper_img":"data/png::",
+			"top":0,
+			"left":0,
+			"width":0,
+			"height":0
+		}
+	},
+
+	"yazilar":{
+		"YAZI0":{
+			"item_index":"YAZI0",
+			"prev_src":"../313.png",
+			"top":0,
+			"left":0,
+			"width":0,
+			"height":0,
+			"text":"Sucuoglu",
+			"font":"Times",
+			"color":"altin"
+		}
+	}
+
+
+}

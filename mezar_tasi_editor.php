@@ -28,6 +28,8 @@
             break;
 
 
+
+
         }
        
         $output = json_encode(array(
@@ -41,7 +43,8 @@
         die;
 
     }
-
+    // porselenler icin siparis gid
+    $SIPARIS_ID = time().Common::generate_random_string(30);
     // js flag
     $DUZENLEME_FLAG = isset($_GET["item_id"]);
 
@@ -119,21 +122,20 @@
       </div>
       <div class="porselen-gruplar" >
          <div class="btn-group well well-sm" role="group" aria-label="...">
+              <button class="btn btn-sm btn-default modal-init" data-target="genel_urunler_modal"><i class="fa fa-square"></i> Sık Kullanılan Ürünler</button>
               <button class="btn btn-sm btn-default modal-init" data-target="porselen_resim_modal" ><i class="fa fa-image"></i> Porselen Resim</button>
               <button class="btn btn-sm btn-default modal-init" data-target="engrave_resim_modal"><i class="fa fa-image"></i> Kazıma Resim</button>
               <button class="btn btn-sm btn-default modal-init" data-target="yazi_ekleme_modal"><i class="fa fa-italic"></i> Yazı</button>
+              
          </div>
-      </div>
-      <div class="porselen-editor-ayarlar" >
-          <h4>Diğer Seçenekler</h4>
       </div>
       <div class="porselen-gruplar" >
          <div class="btn-group well well-sm" role="group" aria-label="...">
-
+            <button class="btn btn-sm btn-success" id="finito"><i class="fa fa-check"></i> Tamamla</button>
          </div>
       </div>
       
-      <div id="porselen_resim_modal" class="modal fade" role="dialog">
+      <div id="porselen_resim_modal" class="secim-modal modal fade" role="dialog">
          <div class="modal-dialog">
             <div class="modal-content">
                <div class="modal-header">
@@ -261,6 +263,62 @@
          </div>
       </div>
 
+      <div id="genel_urunler_modal" class="secim-modal modal fade" role="dialog">
+         <div class="modal-dialog">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Sık Kullanılan Ürünler</h4>
+               </div>
+              <div class="modal-body">
+                      
+                  <div class="row">
+
+                      <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
+                          <div class="title-part">Bismillah Siyah</div>
+                          <div class="prev-part"><img src="<?php echo URL_IMGS  ?>bsm_siyah.png" /></div>
+                          <div class="form-part">
+                            <select class="form-control varyant-select">
+                                <option value="Siyah" prev-src="<?php echo URL_IMGS  ?>bsm_siyah.png">Siyah</option>
+                                <option value="Beyaz" prev-src="<?php echo URL_IMGS  ?>bsm_beyaz.png">Beyaz</option>
+                                <option value="Altın" prev-src="<?php echo URL_IMGS  ?>bsm_altin.png">Altın</option>
+                             </select> 
+                          </div>
+                          <div class="nav-part">
+                              <button class="btn btn-xs btn-success genel-urun-ekle" init-width="350" init-height="68" data-type="resim" variant="1" data-content="Bismillah"><i class="fa fa-plus"></i> Ekle</button>
+                          </div>
+                      </div>
+                      <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
+                          <div class="title-part">Ay Yıldız Kumalama</div>
+                          <div class="prev-part"><img src="<?php echo URL_IMGS  ?>ayyildiz_beyaz.png" /></div>
+                          <div class="form-part">
+                              
+                          </div>
+                          <div class="nav-part">
+                              <button class="btn btn-xs btn-success genel-urun-ekle" init-width="93" init-height="76" data-type="resim" variant="0" data-content="Ay Yıldız Kumlama" prev-src="<?php echo URL_IMGS  ?>ayyildiz_beyaz.png"><i class="fa fa-plus"></i> Ekle</button>
+                          </div>
+                      </div>
+                      <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
+                          <div class="title-part">Kumlama Bayrak</div>
+                          <div class="prev-part"><img src="<?php echo URL_IMGS  ?>kumlama_bayrak.png" /></div>
+                          <div class="form-part">
+                              
+                          </div>
+                          <div class="nav-part">
+                              <button class="btn btn-xs btn-success genel-urun-ekle" init-width="93" init-height="76" data-type="resim" variant="0" data-content="Bayrak Kumlama" prev-src="<?php echo URL_IMGS  ?>kumlama_bayrak.png"><i class="fa fa-plus"></i> Ekle</button>
+                          </div>
+                      </div>
+                  </div>
+
+
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
+               </div>
+            </div>
+         </div>
+      </div>
+
       <div id="yazi_ekleme_modal" class="modal fade" role="dialog">
          <div class="modal-dialog">
             <div class="modal-content">
@@ -316,14 +374,50 @@
                   </div>
                </div>
                <div class="modal-footer">
-                   <button class="btn btn-sm btn-success" id="yazi_ekle"><i class="fa fa-check"></i> Tamam</button>
+                   <button class="btn btn-sm btn-success" id="yazi_ekle" duzenleme="0" d-item-index="-1"><i class="fa fa-check"></i> Tamam</button>
                    <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
                </div>
             </div>
          </div>
       </div>
 
-
+      <div id="finito_modal" class="modal fade" role="dialog">
+         <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Siparişi Tamamla</h4>
+               </div>
+               <div class="modal-body">
+                  <div class="row">
+                      <div class="col-md-7 col-xs-12 col-sm-12"> 
+                          <div id="modal_preview"></div>
+                      </div>
+                      <div class="col-md-4 col-xs-12 col-sm-12" id="modal_form">
+                          <form class="form-horizontal form-label-left">
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Adet *</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input type="text" class="form-control" id="adet" value="1" /> 
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Notlar</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <textarea class="form-control" id="not"></textarea> 
+                                </div>
+                            </div>
+                          </form>
+                      </div>
+                  </div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-success" id="siparis_yukle">Tamam</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
+                </div>
+            </div>
+         </div>
+      </div>
 
       <script type="text/template" id="porselen_template">
           <div class="porselen-template %%SERI_CLASS%%" item-index="%%ITEM_INDEX%%" style="width: %%WIDTH%%px; height:%%HEIGHT%%px">
@@ -337,10 +431,18 @@
           </div>
       </script>
 
-      <script type="text/template" id="yazi_template">
-          <div class="yazi_template" item-index="%%ITEM_INDEX%%">
+      <script type="text/template" id="yazi_template" >
+          <div class="yazi_template" item-index="%%ITEM_INDEX%%" data-renk="%%DATA_RENK%%" data-yazi="%%DATA_YAZI%%" data-font="%%DATA_FONT%%">
                 <img src="%%PREV_SRC%%" />
+                <i action="duzenle"  tip="yazi" class="fa fa-edit"  title="Düzenle"></i>
                 <i action="sil"  tip="yazi" class="fa fa-remove" title="Kaldır"></i>
+          </div>
+      </script>
+
+      <script type="text/template" id="sekil_template">
+          <div class="sekil_template" item-index="%%ITEM_INDEX%%">
+              <img src="%%PREV_SRC%%" />
+              <i action="sil"  tip="sekil" class="fa fa-remove" title="Kaldır"></i>
           </div>
       </script>
 
@@ -350,7 +452,6 @@
                 <img src="%%IMG_SRC%%" />
                 <span class="engrave-id-info">#%%ID_INFO%%</span>
                 <i action="sil"  tip="engrave" class="fa fa-remove" title="Kaldır"></i>
-<!--                 <i action="cevir"  tip="engrave" class="fa fa-refresh" title="Çevir"></i> -->
               </div>
           </div>
       </script>
@@ -382,7 +483,11 @@
                    }
                 },
                 // engrave upload temp file
-                engrave_temp_file = null;
+                engrave_temp_file = null,
+                // finito önizleme ss
+                temp_canvas = null,
+                // siparis gid ( porselenler icin )
+                siparis_gid = "<?php echo $SIPARIS_ID ?>";
 
 
             var // editor taş elementi
@@ -393,6 +498,8 @@
                 engrave_template = $("#engrave_template"),
                 // yazi temp
                 yazi_template = $("#yazi_template"),
+                // sekil temp
+                sekil_template = $("#sekil_template"),
                 // granit - mermer seçim selecti
                 tas_tip_input = $("#tas_tip"),
                 // taş ebat inputlari
@@ -400,7 +507,8 @@
                 tas_h_input = $("#tas_h"),
                 // upload sonrasi tempten alip, cropper aksiyonlari yaptigimiz resim ( modal da )
                 cropper_img = $("#cropper_img"),
-                modals = { porselen_resim_modal: $("#porselen_resim_modal"), engrave_resim_modal:$("#engrave_resim_modal"), yazi_ekleme_modal: $("#yazi_ekleme_modal") };
+                modals = { finito_modal:$("#finito_modal"), porselen_resim_modal: $("#porselen_resim_modal"), engrave_resim_modal:$("#engrave_resim_modal"), yazi_ekleme_modal: $("#yazi_ekleme_modal"), genel_urunler_modal:$("#genel_urunler_modal") },
+                yazi_ekle_btn = $("#yazi_ekle");
 
             var Siparis = {
                 tas: 'siyah_granit',
@@ -436,7 +544,8 @@
                         break;
 
                         case 'sekil':
-
+                            this.sekiller["SEK"+this.sekil_item_index] = data;
+                            this.sekil_item_index++;
                         break;
                     }
                 }
@@ -497,10 +606,33 @@
             });
 
             // modaldan yaziyi editore ekleme btn
-            $("#yazi_ekle").click(function(){
+            yazi_ekle_btn.click(function(){
+
+                // duzenleme yapma
+                if( yazi_ekle_btn.attr("duzenleme") == "1" && yazi_ekle_btn.attr("d-item-index") != "-1" ){
+                    console.log("duzenleme yapiliyor");
+                    // veriyi guncelle
+                    Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].text = AHEditor.text;
+                    Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].font = AHEditor.Font_Select.selected_font;
+                    Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].color = AHEditor.text_color_input.value;
+                    Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].prev_src = AHEditor.preview.src;
+                    var elem = $("[item-index='"+yazi_ekle_btn.attr("d-item-index")+"']");
+                    // editordeki resmi guncelle
+                    elem.find("img").get(0).src = AHEditor.preview.src;
+                    // ekleme butonunu resetle
+                    yazi_ekle_btn.attr("duzenleme", 0).attr("d-item-index", -1);
+                    // modali kapat
+                    modals["yazi_ekleme_modal"].modal('hide');
+                    // ah editoru resetle
+                    AHEditor.reset();
+                    return;
+                }
                 var item_id = "YAZI"+Siparis.yazi_item_index,
                     template = yazi_template.html().replace("%%ITEM_INDEX%%", item_id ).
-                                                    replace("%%PREV_SRC%%", AHEditor.preview.src );
+                                                    replace("%%PREV_SRC%%", AHEditor.preview.src ).
+                                                    replace("%%DATA_YAZI%%", AHEditor.text ).
+                                                    replace("%%DATA_RENK%%", AHEditor.text_color_input.value ).
+                                                    replace("%%DATA_FONT%%", AHEditor.Font_Select.selected_font );
                 tas.append( template );
                 var elem = $("[item-index='"+item_id+"']"),
                     img = $(elem.find("img").get(0));
@@ -534,7 +666,6 @@
                  });
                  // ah editoru resetle
                  AHEditor.reset();
-
             });
             // editore eklenen itemlerin çevirme - silme butonlari
             $(document).on("click", "[action]", function(){
@@ -562,6 +693,19 @@
                         Siparis.porselenler[parent_node.attr("item-index")].height = cm_to_px(w_h_data[1]);
                         // dom elementine değişikligi uygula
                         parent_node.css({ width:Siparis.porselenler[parent_node.attr("item-index")].width+"px", height:Siparis.porselenler[parent_node.attr("item-index")].height+"px" });
+                    break;
+
+                    case 'duzenle':
+                        // yaziyi duzenleme
+                        AHEditor.text = parent_node.attr("data-yazi");
+                        AHEditor.Font_Select.select( $("[value='"+parent_node.attr("data-font")+"']").get(0) );
+                        AHEditor.text_color_input.value = parent_node.attr("data-renk");
+                        AHEditor.editor_input.value = parent_node.attr("data-yazi");
+                        AHEditor.old_img = parent_node.find("img").get(0).src;
+                        AHEditor.update_preview();
+                        // butona düzenleme yapilacagi bilgisini ver
+                        yazi_ekle_btn.attr("duzenleme", 1).attr("d-item-index", parent_node.attr("item-index"));
+                        modals["yazi_ekleme_modal"].modal('show');
                     break;
                 } 
             });
@@ -638,7 +782,83 @@
                    break;
                }
            });
+          
+           $("#finito").click(function(){
+                console.log(Siparis);
+                html2canvas(tas.get(0), { async:false }).then(function(canvas) {
+                    temp_canvas = canvas;
+                    // onizleme init
+                    $("#modal_preview").html( canvas );
+                    canvas.style.width = "400px";
+                    canvas.style.height = (400 * Siparis.tas_ebat.h / Siparis.tas_ebat.w)+"px";
+                    modals["finito_modal"].modal("show");
 
+                });
+           });
+  
+           $(".genel-urun-ekle").click(function(){
+                var _this = $(this);
+                switch( _this.attr("data-type") ){
+                    case 'yazi':
+
+                    break;
+
+                    case 'porselen':
+
+                    break;
+
+                    case 'resim':
+                        var item_id = "SEK"+Siparis.sekil_item_index,
+                            prev_src = null,
+                            extra_data = {};
+                        if( _this.attr("variant") == "0" ){
+                            // varyant yok
+                            prev_src = _this.attr("prev-src");
+                        } else {
+                            // varyantli
+                            var var_option = $($(_this.parent().parent().find(".varyant-select").get(0)).find(":selected").get(0));
+                            prev_src = var_option.attr("prev-src");
+                            extra_data["varyant"] = var_option.val();
+                        }
+                        var template = sekil_template.html().replace("%%ITEM_INDEX%%", item_id ).
+                                                             replace("%%PREV_SRC%%", prev_src );
+                        tas.append(template);
+                        var elem = $("[item-index='"+item_id+"']"),
+                            img = $(elem.find("img").get(0));
+                        elem.css({width:_this.attr("init-width")+"px",height:_this.attr("init-height")+"px"});
+                        img.css({width:_this.attr("init-width")+"px",height:_this.attr("init-height")+"px"});
+                        elem.draggable({
+                            stop:function(){
+                                // engrave inner in pozisyon verisini guncelle ( duzenleme icin )
+                                Siparis.sekiller[item_id].top = elem.css("top");
+                                Siparis.sekiller[item_id].left = elem.css("left");
+                            }
+                        });
+                        img.resizable({
+                            resize: function( event, ui ) {
+                                // resimi resize ettigimiz için, alt üst butonlarin saçmalamaması için parent elementi de resize ediyoruz paralel olarak
+                                elem.css({width:ui.size.width+"px", height:ui.size.height+"px"});
+                                // siparis verisini update et
+                                Siparis.sekiller[item_id].width = ui.size.width;
+                                Siparis.sekiller[item_id].height = ui.size.height;
+                            }
+                        });
+                        Siparis.urun_ekle('sekil', extend({
+                            item_index:item_id,
+                            top:0,
+                            left:0,
+                            data_type:_this.attr("data-type"),
+                            data_content:_this.attr("data-content"),
+                            width:_this.attr("init-width"),
+                            height:_this.attr("init-height")
+                        }, extra_data));
+                        if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                        PamiraNotify("success", "Eklendi", "Şekil editöre eklendi.");  
+
+
+                    break;
+                }
+           });
 
             // ebatlarin js den selectlerini ekleme
             foreach( $AHC("ebat-select"), function(item){
@@ -737,6 +957,7 @@
                   return trim( get_val( this.editor_input ) ).length == 0;
                 },
                 request_preview: function(){
+                  yazi_ekle_btn.get(0).disabled = true;
                   AHAJAX_V3.req( 
                     "",
                     manual_serialize({
@@ -749,6 +970,7 @@
                     function( r ){
                       AHEditor.old_img                    = r.data.old_img;
                       AHEditor.preview.src                = r.data.img_src;
+                      yazi_ekle_btn.get(0).disabled = false;
                     }
                   );
                 },

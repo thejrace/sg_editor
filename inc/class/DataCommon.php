@@ -12,7 +12,7 @@
 				$this->details = $query[0];
 				$this->ok = true;
 			} else {
-				$this->return_text = "Böyle bir kayıt yok.";
+				$this->return_text = "Böyle bir kayıt yok[1].";
 			}
 		}
 

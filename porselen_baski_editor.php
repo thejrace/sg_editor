@@ -3,7 +3,7 @@
     require CLASS_DIR . "CanvasUpload.php";
     require CLASS_DIR . "ImageUpload.php";
     require CLASS_DIR . "PorselenSiparis.php";  
-    
+
     if( $_POST ){
 
         $OK = 1;
@@ -25,7 +25,11 @@
 
             case 'porselen_siparis_duzenle':
 
-                $PorselenSiparis = new PorselenSiparis(Input::get("item_id"));
+                if( isset($_GET["parent_gid"]) && isset($_GET["parent_item_id"])) {
+                  $PorselenSiparis = new PorselenSiparis( array( "parent_gid" => $_GET["parent_gid"],  "parent_item_id" => $_GET["parent_item_id"] ));
+                } else {
+                    $PorselenSiparis = new PorselenSiparis( $_GET["item_id"] );
+                }
                 if( $PorselenSiparis->is_ok()){
                     if( !$PorselenSiparis->duzenle( Input::escape($_POST), $_FILES ))  {
                         $OK = 0;
@@ -34,17 +38,24 @@
                     $OK = 0;
                 }
                 $TEXT = $PorselenSiparis->get_return_text();
+
+
             break;  
 
             case 'data_download':
-
-              $PorselenSiparis = new PorselenSiparis( $_GET["item_id"] );
+              
+              if( isset($_GET["parent_gid"]) && isset($_GET["parent_item_id"])) {
+                  $PorselenSiparis = new PorselenSiparis( array( "parent_gid" => $_GET["parent_gid"],  "parent_item_id" => $_GET["parent_item_id"] ));
+              } else {
+                  $PorselenSiparis = new PorselenSiparis( $_POST["item_id"] );
+              }
               if( !$PorselenSiparis->is_ok() || $PorselenSiparis->get_details("kullanici") != User::get_data("user_id") ){
                   $OK = 0;
+                  $TEXT = $PorselenSiparis->get_return_text();
               } else {
                   $DATA = $PorselenSiparis->get_details();
               }
-
+              
             break;
 
 
@@ -54,8 +65,8 @@
         $output = json_encode(array(
             "ok"           => $OK,           
             "text"         => $TEXT,         
-            "data"         => $DATA
-            //"oh"           => Input::escape($_POST)
+            "data"         => $DATA,
+            "oh"           => Input::escape($_POST)
         ));
 
         echo $output;
@@ -65,6 +76,9 @@
 
     // js flag
     $DUZENLEME_FLAG = isset($_GET["item_id"]);
+
+    // baslik editorden resim ekleme
+    $PORTABLE_FLAG = isset($_GET["portable"]);
 
    ?>
 <!DOCTYPE html>
@@ -114,7 +128,7 @@
       <div class="porselen-editor-ayarlar" >
           <h4>Ayarlar</h4>
       </div>
-      <div class="porselen-gruplar" >
+      <div class="porselen-gruplar portable-hide" >
          <div class="btn-group well well-sm" role="group" aria-label="...">
 
              <button class="btn btn-sm btn-success grup-btn" seri="oval"><i class="fa fa-angle-double-right"></i> Oval</button>
@@ -137,8 +151,8 @@
            
            <button class="btn btn-sm btn-primary ayar-btn" ayar="resimupload"><i class="fa fa-upload"></i> Resim Yükle & Düzenle</button>
            <button class="btn btn-sm btn-default ayar-btn" ayar="resimreset"><i class="fa fa-refresh"></i> Resim Reset</button>
-           <button class="btn btn-sm btn-default ayar-btn" ayar="taslrotate" data-toggle="tooltip" title="Hooray!"><i class="fa fa-rotate-left" ></i> </button>
-           <button class="btn btn-sm btn-default ayar-btn" ayar="tasrrotate"><i class="fa fa-rotate-right"></i> </button>
+           <button class="btn btn-sm btn-default ayar-btn portable-hide" ayar="taslrotate"><i class="fa fa-rotate-left" ></i> </button>
+           <button class="btn btn-sm btn-default ayar-btn portable-hide" ayar="tasrrotate"><i class="fa fa-rotate-right"></i> </button>
          </div>
       </div>
       <div class="porselen-gruplar">
@@ -162,20 +176,20 @@
                       </div>
                       <div class="col-md-4 col-xs-12 col-sm-12" id="modal_form">
                           <form class="form-horizontal form-label-left">
-                            <div class="form-group">
+                            <div class="form-group portable-hide" >
                                 <label class="control-label col-md-3 col-sm-3 col-xs-12">Ebat *</label>
                                 <div class="col-md-9 col-sm-9 col-xs-12">
                                     <select class="form-control" id="ebat_select">
                                     </select> 
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group portable-hide">
                                 <label class="control-label col-md-3 col-sm-3 col-xs-12">Adet *</label>
                                 <div class="col-md-9 col-sm-9 col-xs-12">
                                     <input type="text" class="form-control" id="adet" value="1" /> 
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group ">
                                 <label class="control-label col-md-3 col-sm-3 col-xs-12">Notlar</label>
                                 <div class="col-md-9 col-sm-9 col-xs-12">
                                     <textarea class="form-control" id="not"></textarea> 
@@ -267,8 +281,65 @@
                    uploaded_img.attr("def-width", temp_crop_data.w);
                    uploaded_img.attr("def-height", temp_crop_data.h);
                }
+
+               // duzenleme - portable data download func
+               function data_download( data ){
+                  PamiraNotify("warning", "Lütfen bekleyin", "Sipariş verisi indiriliyor." );
+                  REQ.ACTION("", extend( {req:"data_download"}, data ), function(res){
+                      if(!res.ok){
+                          PNotify.notices[0].remove();
+                          return;
+                      }
+                      // portable duzenleme kontrolü
+                      if( portable && res.ok ) portable_edit_flag = true;
+                      //console.log(res);
+                      var js_data = JSON.parse(res.data.edit_data);
+                      //console.log(js_data);
+                      kesim_baslat();
+                      // cropper resim init
+                      cropper_img.attr("src", resim_url_prefix+"SGO"+res.data.gid+"."+res.data.orjinal_resim_ext);
+                      // modal larda garip hareketler yapiyor cropper o yuzden, modal acildiktan sonra init ediyoruz
+                      cropper_modal.on('shown.bs.modal', function () {
+                          if( !duzenleme && !portable ) return; // duzenleme sonrasi, yeni sipariş falan verirse bu eventi calistirmicaz
+                          if( cropper == undefined ) cropper = new Cropper( cropper_img.get(0), extend( cropper_init_data, { data:js_data.cropper_data.data } ) );
+                      });
+                      // editor resim init
+                      uploaded_img.attr("src", resim_url_prefix+"SGC"+res.data.gid+".png");
+                      // editor resim boyutlandirma
+                      uploaded_img.css({ height:js_data.img_data.height, width:js_data.img_data.width });
+                      // resim reset verileri 
+                      uploaded_img.attr("def-width", js_data.img_data.def_width);
+                      uploaded_img.attr("def-height", js_data.img_data.def_height);
+                      // resim container boyutlandirma
+                      uploaded_img.parent().css({ width:js_data.img_data.width, height:js_data.img_data.height });
+                      // resmin taş üzerindeki pozisyonu
+                      draggable_img.css({ top:js_data.img_data.top, left:js_data.img_data.left});
+                      // arka plan
+                      crop_container.css({"background-color":js_data.img_data.tas_bg_color});
+                      // taş açısı init
+                      porselen_aci = js_data.img_data.tas_aci;
+                      tas_donuk = js_data.img_data.tas_donuk_flag;
+                      if( tas_donuk ) crop_container.addClass("porselen-rotate");
+                      // taş seri init
+                      seri_sec($("[seri='"+res.data.seri+"']"));
+                      // edit datayi init et
+                      edit_data = js_data;
+                      // siparis form doldur
+                      crop_modal_adet_input.val(res.data.adet);
+                      // portable da $_GET ile aliyoruz ebatı
+                      if( !portable ){
+                          crop_modal_ebat_select.val(res.data.ebat);
+                          aktif_ebat = res.data.ebat;
+                      }
+                      crop_modal_not_input.val(res.data.notlar);
+                      PNotify.notices[0].remove();
+                  });
+               }
   
                var duzenleme = <?php echo (int)$DUZENLEME_FLAG ?>,
+                   portable  = <?php echo (int)$PORTABLE_FLAG ?>,
+                   // portable da editorden yeni mi eklenecek, yoksa eklenmiş olan mı düzeltilecek bayragi
+                   portable_edit_flag = false,
                    allowed_exts = ["image/jpeg", "image/png", "image/bmp", "image/gif"],
                    // ebat seçenekleri
                    ebat_options = { oval:["8x10 cm", "9x12 cm", "11x15 cm", "13x18 cm", "18x24 cm", "24x30 cm"],
@@ -364,50 +435,32 @@
                }).on('colorpickerChange colorpickerCreate', function (e) {
                     crop_container.css({"background-color":e.color.toString("hex") + "!important"});
                });
+
+               if( portable ){
+                    data_download({});
+                    <?php if( isset($_GET["tas_donuk"]) ){ ?>
+                        tas_donuk = true;
+                        crop_container.addClass("porselen-rotate");
+                        porselen_aci = 90;
+                    <?php } ?>
+                    <?php if( isset($_GET["seri"])) { ?>
+                        seri_sec($("[seri='<?php echo $_GET["seri"] ?>']"));
+                    <?php } ?>
+
+                    <?php if( isset($_GET["ebat"])) { ?>
+                        aktif_ebat = "<?php echo $_GET["ebat"] ?>";
+                        crop_modal_ebat_select.val(aktif_ebat);
+                    <?php } ?>
+                    // final formda ebat ve adeti gizle
+                    crop_modal_adet_input.val(1);
+                    $(".portable-hide").hide();
+               }
+
                // duzenleme yapiliyorsa ayarlamalari yap
                if( duzenleme ){
-                    PamiraNotify("warning", "Lütfen bekleyin", "Sipariş verisi indiriliyor." );
-                    REQ.ACTION("", {req:"data_download"}, function(res){
-                        //console.log(res);
-                        var js_data = JSON.parse(res.data.edit_data);
-                        //console.log(js_data);
-                        kesim_baslat();
-                        // cropper resim init
-                        cropper_img.attr("src", resim_url_prefix+"SGO"+res.data.gid+"."+res.data.orjinal_resim_ext);
-                        // modal larda garip hareketler yapiyor cropper o yuzden, modal acildiktan sonra init ediyoruz
-                        cropper_modal.on('shown.bs.modal', function () {
-                            if( !duzenleme ) return; // duzenleme sonrasi, yeni sipariş falan verirse bu eventi calistirmicaz
-                            if( cropper == undefined ) cropper = new Cropper( cropper_img.get(0), extend( cropper_init_data, { data:js_data.cropper_data.data } ) );
-                        });
-                        // editor resim init
-                        uploaded_img.attr("src", resim_url_prefix+"SGC"+res.data.gid+".png");
-                        // editor resim boyutlandirma
-                        uploaded_img.css({ height:js_data.img_data.height, width:js_data.img_data.width });
-                        // resim reset verileri 
-                        uploaded_img.attr("def-width", js_data.img_data.def_width);
-                        uploaded_img.attr("def-height", js_data.img_data.def_height);
-                        // resim container boyutlandirma
-                        uploaded_img.parent().css({ width:js_data.img_data.width, height:js_data.img_data.height });
-                        // resmin taş üzerindeki pozisyonu
-                        draggable_img.css({ top:js_data.img_data.top, left:js_data.img_data.left});
-                        // arka plan
-                        crop_container.css({"background-color":js_data.img_data.tas_bg_color});
-                        // taş açısı init
-                        porselen_aci = js_data.img_data.tas_aci;
-                        tas_donuk = js_data.img_data.tas_donuk_flag;
-                        if( tas_donuk ) crop_container.addClass("porselen-rotate");
-                        // taş seri init
-                        seri_sec($("[seri='"+res.data.seri+"']"));
-                        // edit datayi init et
-                        edit_data = js_data;
-                        // siparis form doldur
-                        crop_modal_adet_input.val(res.data.adet);
-                        crop_modal_ebat_select.val(res.data.ebat);
-                        aktif_ebat = res.data.ebat;
-                        crop_modal_not_input.val(res.data.not);
-                        PNotify.notices[0].remove();
-                    });
-
+                    <?php if(isset($_GET["item_id"])){ ?>
+                        data_download( {item_id:"<?php echo $_GET["item_id"] ?>"});
+                    <?php } ?>
                }
 
                // seri değiştirme butonlari
@@ -479,6 +532,7 @@
                       alert("Sitemiz kullandığınız tarayıcı versiyonunu desteklemiyor. Yalnızca önizleme yapabilirsiniz.");
                       return false;
                   }
+
                   // form kontrolleri yapiyoruz
                   form_data = new FormData();
                   var adet_val = crop_modal_adet_input.val();
@@ -486,6 +540,16 @@
                       PamiraNotify("error", "Hata", "Formda hatalar var." );
                       return;
                   }
+
+                  if( portable ){
+                      <?php if( isset($_GET["parent_gid"])){ ?>
+                        form_data.append("parent_gid", "<?php echo $_GET["parent_gid"] ?>");
+                      <?php } ?>
+                      <?php if( isset($_GET["parent_item_id"])){ ?>
+                        form_data.append("parent_item_id", "<?php echo $_GET["parent_item_id"] ?>");
+                      <?php } ?>
+                  }
+
                   PamiraNotify("info", "İşlem Yapılıyor", "Siparişiniz siteye yükleniyor.. Lütfen bekleyin.");
                   var _this = this;
                   _this.disabled = true;
@@ -522,7 +586,7 @@
                   form_data.append("preview", temp_canvas.toDataURL("image/png") );
                   form_data.append("resim", temp_file );
                   form_data.append("edit_data", JSON.stringify(edit_data, null, 2));
-                  if( duzenleme ){
+                  if( duzenleme || portable_edit_flag ){
                       form_data.append("req", "porselen_siparis_duzenle");
                   } else {
                       form_data.append("req", "porselen_siparis_yukle");
@@ -543,7 +607,7 @@
                               _this.disabled = false;
                               // sipariş modalini kapat
                               crop_modal.modal("hide");
-                              if( duzenleme ) return;
+                              if( duzenleme || portable ) return;
                               // preview ve orjinal dosyalari temizle
                               temp_file = null;
                               temp_canvas = null;
@@ -578,7 +642,7 @@
                      break;
 
                      case 'kesimok':
-                          if( !duzenleme && temp_file == undefined ){
+                          if( !duzenleme && !portable && temp_file == undefined ){
                               PamiraNotify("error", "Hata", "Editöre resim yüklenmemiş. \"Resim Yükle & Düzenle\" butonunu kullanarak resim yükleyin.");
                               return false;
                           }
@@ -614,7 +678,7 @@
                      break;
          
                      case 'resimreset':
-                         if( !duzenleme && temp_file == undefined ){
+                         if( !duzenleme && !portable && temp_file == undefined ){
                             PamiraNotify("error", "Hata", "Editöre resim yüklenmemiş. \"Resim Yükle & Düzenle\" butonunu kullanarak resim yükleyin.");
                             return false;
                          }
@@ -630,7 +694,7 @@
          
                      case 'indir':
                         // editor de resim var mi kontrol et
-                        if( !duzenleme && temp_file == undefined ){
+                        if( !duzenleme && !portable && temp_file == undefined ){
                             PamiraNotify("error", "Hata", "Editöre resim yüklenmemiş. \"Resim Yükle & Düzenle\" butonunu kullanarak resim yükleyin.");
                             return false;
                         }
@@ -638,15 +702,16 @@
                         var dimensions_data;
                         // taşı çevirmişse, w ile h yi swap ediyoruz keserken
                         if( tas_donuk ){
-                            dimensions_data = { width:seri_dimensions[aktif_seri][1], height:seri_dimensions[aktif_seri][0] };
+                            dimensions_data = { width:seri_dimensions[aktif_seri][1] + 20, height:seri_dimensions[aktif_seri][0] };
                         } else {
-                            dimensions_data = { width:seri_dimensions[aktif_seri][0], height:seri_dimensions[aktif_seri][1]}
+                            dimensions_data = { width:seri_dimensions[aktif_seri][0] + 20, height:seri_dimensions[aktif_seri][1]}
                         }
                         html2canvas(crop_container.get(0), extend( { async:false }, dimensions_data )).then(function(canvas) {
                             temp_canvas = canvas;
                             // onizleme init
                             crop_modal_preview.html( canvas );
                             // select i seriye göre ayarla
+                            console.log(aktif_ebat);
                             add_options( crop_modal_ebat_select.get(0), true, ebat_options[aktif_seri], aktif_ebat, true );
                             crop_modal.modal("show");
                         });

@@ -353,6 +353,10 @@
 	color:#8c8cff;
 }
 
+.tas i[action="resim_ekle"]{
+	color:#ffaa2b;
+}
+
 .tas i[ebat-bool="1"]{
 	color:#8c8cff;
 }

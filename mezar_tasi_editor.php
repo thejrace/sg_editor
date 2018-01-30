@@ -28,7 +28,7 @@
             break;
 
 
-
+            // kaydederken, porselenlerin ebatı değişip değişmedigini kontrol edip, porselen_siparislerdeki kayıtları da güncelleyeceğız !!!!!!!!!!!!!!!!!!!!!!!
 
         }
        
@@ -86,13 +86,8 @@
    </head>
    <body>
       <div class="row porselen-crop-grup section-container-spacer">
-      
             <div class="tas siyah_granit">
-
-                
-
             </div>
-    
       </div>
       <div class="porselen-editor-ayarlar" >
           <h4>Taş Ayarları</h4>
@@ -235,7 +230,23 @@
          </div>
       </div>
 
-
+      <div id="porselen_resim_upload_modal" class="modal fade" role="dialog">
+         <div class="modal-dialog">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Porselen Resim Ekleme</h4>
+               </div>
+               <div class="modal-body">
+                    <iframe def-src="porselen_baski_editor.php" src="porselen_baski_editor.php" id="editor_frame"></iframe>
+               </div>
+               <div class="modal-footer">
+                   <button class="btn btn-sm btn-success" id="porselen_resim_upload_btn"><i class="fa fa-check"></i> Tamam</button>
+                   <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
+               </div>
+            </div>
+         </div>
+      </div>
 
       <div id="engrave_resim_modal" class="modal fade" role="dialog">
          <div class="modal-dialog">
@@ -425,9 +436,9 @@
               <i action="ebat-degistir" tip="porselen" ebat-bool="1" class="fa fa-plus" title="Taşı Büyüt"></i>
               <img src="%%PREV_SRC%%" />
               <span class="porselen-id-info">#%%ID_INFO%%</span>
+              <i action="resim_ekle"  tip="porselen" class="fa fa-image" title="Resim Ekle"></i>
               <i action="sil"  tip="porselen" class="fa fa-remove" title="Kaldır"></i>
               <i action="cevir"  tip="porselen" class="fa fa-refresh" title="Çevir"></i>
-              
           </div>
       </script>
 
@@ -456,9 +467,6 @@
           </div>
       </script>
 
-
-
-
       <script>
          $(document).ready(function(){
             var // porselen ebat listesi
@@ -485,10 +493,8 @@
                 // engrave upload temp file
                 engrave_temp_file = null,
                 // finito önizleme ss
-                temp_canvas = null,
-                // siparis gid ( porselenler icin )
-                siparis_gid = "<?php echo $SIPARIS_ID ?>";
-
+                temp_canvas = null;
+              
 
             var // editor taş elementi
                 tas = $(".tas"),
@@ -507,10 +513,13 @@
                 tas_h_input = $("#tas_h"),
                 // upload sonrasi tempten alip, cropper aksiyonlari yaptigimiz resim ( modal da )
                 cropper_img = $("#cropper_img"),
-                modals = { finito_modal:$("#finito_modal"), porselen_resim_modal: $("#porselen_resim_modal"), engrave_resim_modal:$("#engrave_resim_modal"), yazi_ekleme_modal: $("#yazi_ekleme_modal"), genel_urunler_modal:$("#genel_urunler_modal") },
-                yazi_ekle_btn = $("#yazi_ekle");
+                modals = { finito_modal:$("#finito_modal"), porselen_resim_modal: $("#porselen_resim_modal"), engrave_resim_modal:$("#engrave_resim_modal"), yazi_ekleme_modal: $("#yazi_ekleme_modal"), genel_urunler_modal:$("#genel_urunler_modal"), porselen_resim_upload_modal:$("#porselen_resim_upload_modal") },
+                yazi_ekle_btn = $("#yazi_ekle"),
+                porselen_editor_iframe = $("#editor_frame");
 
             var Siparis = {
+                // siparis gid ( porselenler icin )
+                gid:"<?php echo $SIPARIS_ID ?>",
                 tas: 'siyah_granit',
                 tas_ebat: { w:50, h:50 },
                 porselenler:  {},
@@ -610,8 +619,8 @@
 
                 // duzenleme yapma
                 if( yazi_ekle_btn.attr("duzenleme") == "1" && yazi_ekle_btn.attr("d-item-index") != "-1" ){
-                    console.log("duzenleme yapiliyor");
                     // veriyi guncelle
+
                     Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].text = AHEditor.text;
                     Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].font = AHEditor.Font_Select.selected_font;
                     Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].color = AHEditor.text_color_input.value;
@@ -701,12 +710,30 @@
                         AHEditor.Font_Select.select( $("[value='"+parent_node.attr("data-font")+"']").get(0) );
                         AHEditor.text_color_input.value = parent_node.attr("data-renk");
                         AHEditor.editor_input.value = parent_node.attr("data-yazi");
-                        AHEditor.old_img = parent_node.find("img").get(0).src;
+                        // bastaki url i sil
+                        AHEditor.old_img = parent_node.find("img").get(0).src.substring( AHEditor.url_prefix.length, AHEditor.url_prefix.length+36 );
                         AHEditor.update_preview();
                         // butona düzenleme yapilacagi bilgisini ver
                         yazi_ekle_btn.attr("duzenleme", 1).attr("d-item-index", parent_node.attr("item-index"));
                         modals["yazi_ekleme_modal"].modal('show');
                     break;
+
+                    case 'resim_ekle':
+                        // porselen resim ekleme
+                        // bu porselene resim eklenmişse, butona attr çakıp düzenleme olup olmadigina bakicaz
+                        var seri_str = Siparis.porselenler[parent_node.attr("item-index")].seri;
+                        var ped_src = porselen_editor_iframe.attr("def-src") + "?portable=true&"+
+                                                                            "seri="+seri_str.substring(0, seri_str.indexOf("-"))+"&"+
+                                                                            "ebat="+Siparis.porselenler[parent_node.attr("item-index")].ebat+"&"+
+                                                                            "parent_gid="+Siparis.gid+"&"+
+                                                                            "parent_item_id="+parent_node.attr("item-index");
+                        if( this.getAttribute("uploaded") == 1 ) ped_src += "&uploaded=true"
+                        //console.log(ped_src);
+                        porselen_editor_iframe.attr("src", ped_src);
+                        modals["porselen_resim_upload_modal"].modal('show');
+
+                    break;
+
                 } 
             });
 
@@ -785,6 +812,7 @@
           
            $("#finito").click(function(){
                 console.log(Siparis);
+                $("[action]").hide();
                 html2canvas(tas.get(0), { async:false }).then(function(canvas) {
                     temp_canvas = canvas;
                     // onizleme init
@@ -792,7 +820,7 @@
                     canvas.style.width = "400px";
                     canvas.style.height = (400 * Siparis.tas_ebat.h / Siparis.tas_ebat.w)+"px";
                     modals["finito_modal"].modal("show");
-
+                    $("[action]").show();
                 });
            });
   
@@ -947,6 +975,7 @@
                 editor_input:null,
                 old_img:null,
                 preview:null,
+                url_prefix: "<?php echo URL_AH_EDITOR_PREVS ?>",
                 init: function(){
                   this.editor_input     = $AH('editor-text');
                   this.preview      = $AH('editor-preview-img');
@@ -957,6 +986,7 @@
                   return trim( get_val( this.editor_input ) ).length == 0;
                 },
                 request_preview: function(){
+
                   yazi_ekle_btn.get(0).disabled = true;
                   AHAJAX_V3.req( 
                     "",
@@ -988,7 +1018,8 @@
                 reset: function(){
                     this.text = "Sucuoglu";
                     this.editor_input.value = "";
-                    this.request_preview();
+                    this.old_img = null;
+                    //this.request_preview();
                 },
                 Font_Select: {
                   init: function(){

@@ -189,6 +189,26 @@
                                     <input type="text" class="form-control" id="adet" value="1" /> 
                                 </div>
                             </div>
+
+                            <div class="form-group portable-hide">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">İsim *</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input type="text" class="form-control" id="isim" value="<?php echo Guest::get_data("user_name") ?>" /> 
+                                </div>
+                            </div>
+                            <div class="form-group portable-hide">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Telefon</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input type="text" class="form-control" id="telefon" value="<?php echo Guest::get_data("user_telefon") ?>" /> 
+                                </div>
+                            </div>
+                            <div class="form-group portable-hide">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Eposta</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input type="text" class="form-control" id="eposta" value="<?php echo Guest::get_data("user_email") ?>" /> 
+                                </div>
+                            </div>
+
                             <div class="form-group ">
                                 <label class="control-label col-md-3 col-sm-3 col-xs-12">Notlar</label>
                                 <div class="col-md-9 col-sm-9 col-xs-12">
@@ -533,6 +553,23 @@
                       return false;
                   }
 
+                  var isim_val = $("#isim").val(), telefon_val = $("#telefon").val(), eposta_val = $("#eposta").val();
+                  if( trim(isim_val) == "" ){
+                      if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                      PamiraNotify("error", "Hata", "İsim boş bırakılamaz." );  
+                      return;
+                  }
+                  if( trim(telefon_val) == "" && trim(eposta_val) == "" ){
+                      if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                      PamiraNotify("error", "Hata", "Telefon veya Eposta bilgilerinden en az birini girmelisiniz." );  
+                      return;
+                  }
+                  if( trim(eposta_val) != "" && !FormValidation.email(eposta_val) ){
+                      if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                      PamiraNotify("error", "Hata", "Lütfen geçerli bir eposta adresi giriniz.");  
+                      return;
+                  }
+
                   // form kontrolleri yapiyoruz
                   form_data = new FormData();
                   var adet_val = crop_modal_adet_input.val();
@@ -582,6 +619,9 @@
                   form_data.append("ebat", crop_modal_ebat_select.val());
                   form_data.append("adet", adet_val);
                   form_data.append("notlar", crop_modal_not_input.val());
+                  form_data.append("eposta", eposta_val);
+                  form_data.append("isim", isim_val);
+                  form_data.append("telefon", telefon_val);
                   form_data.append("seri", aktif_seri);
                   form_data.append("preview", temp_canvas.toDataURL("image/png") );
                   form_data.append("resim", temp_file );

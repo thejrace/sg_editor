@@ -37,6 +37,7 @@
 	define("URL_PORSELEN_BASKI_EDITOR", URL_MAIN . "porselen_baski_editor.php");	
 
 	define("DBT_PORSELEN_SIPARISLERI", "porselen_siparisleri");
+	define("DBT_BASLIK_SIPARISLERI", "baslik_siparisleri");
 	define("DBT_KULLANICILAR", "kullanicilar");
 	define("DBT_COOKIE_TOKENS", "cookie_tokens");
 	define("DBT_MISAFIRLER", "misafirler");

@@ -36,6 +36,7 @@
 			$_SESSION["user_id"] 	= $user_id;
 			$_SESSION["user_name"] 	= $user_data[0]["isim"];
 			$_SESSION["user_email"] = $input["eposta"];
+			$_SESSION["user_telefon"] = $input["telefon"];
 
 			self::$st_return_text = "Giriş başarılı.";
 			return true;
@@ -72,6 +73,7 @@
 			$_SESSION["user_id"] 	= $query[0]["id"];
 			$_SESSION["user_name"] 	= $query[0]["isim"];
 			$_SESSION["user_email"] = $query[0]["eposta"];
+			$_SESSION["user_telefon"] = $query[0]["telefon"];
 
 			return true;
 		}
@@ -83,6 +85,7 @@
 			DB::getInstance()->insert( DBT_KULLANICILAR, array(
 				"isim" 			=> $input["isim"],
 				"eposta" 		=> $input["eposta"],
+				"telefon" 		=> $input["telefon"],
 				"salt" 			=> $salt,
 				"pass" 			=> $hash,
 				"durum" 		=> 1,
@@ -125,6 +128,7 @@
 			if( isset($_SESSION["user_id"])) unset($_SESSION["user_id"]);
 			if( isset($_SESSION["user_name"])) unset($_SESSION["user_name"]);
 			if( isset($_SESSION["user_email"])) unset($_SESSION["user_email"]);
+			if( isset($_SESSION["user_telefon"])) unset($_SESSION["user_telefon"]);
 		}
 
 		public static function check_login(){

@@ -24,6 +24,7 @@
 			self::$data["user_id"] = DB::getInstance()->lastInsertedId();
 			self::$data["user_email"] = "";
 			self::$data["user_name"] = "";
+			self::$data["user_telefon"] = "";
 			setCookie("sgguestck", $randcookie, time()+86400*365, "/");
 		}
 
@@ -37,10 +38,16 @@
 					self::$data["user_id"] = $query[0]["id"];
 					self::$data["user_email"]  = $query[0]["eposta"];
 					self::$data["user_name"]    = $query[0]["isim"];
+					self::$data["user_telefon"]    = $query[0]["telefon"];
 				}
 			} else {
 				self::create();
 			}
+		}
+
+		// misafir sipariş verdiginde hatirlayabilmek için bilgilerini kaydet
+		public static function temp_update_register( $telefon, $eposta, $isim ){
+			DB::getInstance()->query("UPDATE " . DBT_MISAFIRLER ." SET telefon = ?, eposta = ?, isim = ? WHERE cookie = ?", array( $telefon, $eposta, $isim, $_COOKIE["sgguestck"] ));
 		}
 
 		public static function get_return_text(){

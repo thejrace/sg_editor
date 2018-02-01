@@ -53,6 +53,9 @@
               "ebat"                => $postdata["ebat"],
               "adet"                => $postdata["adet"],
               "notlar"              => $postdata["notlar"],
+              "eposta"              => $postdata["eposta"],
+              "telefon"             => $postdata["telefon"],
+              "isim"                => $postdata["isim"],
               "gid"                 => $random_fix,
               "orjinal_resim_ext"   => ImageUpload::$ext,
               "edit_data"           => str_replace("&quot;", '"', $postdata["edit_data"]),
@@ -70,6 +73,9 @@
               $this->return_text = "Bir hata oluştu.[0]";
               return false;
           }
+
+          // misafirin db bilgilerini guncelle
+          Guest::temp_update_register( $postdata["telefon"], $postdata["eposta"], $postdata["isim"] );
 
           $this->return_text = "Sipariş Eklendi.";
           return true;
@@ -133,6 +139,11 @@
           $this->return_text = "Sipariş güncellendi.";
           return true;
 
+      }
+
+      public function ebat_guncelle( $yeniebat ){
+          $this->pdo->query("UPDATE " . $this->dt_table ." SET ebat = ? WHERE id = ?",array( $yeniebat, $this->details["id"]));
+          $this->details["ebat"] = $yeniebat;
       }
 
     }

@@ -588,3 +588,9 @@
 #finito_modal #modal_preview canvas{
 	width:100%;
 }
+
+#portable_porselen_editor_frame {
+	width:100%;
+	height:750px;
+	border:none;
+}

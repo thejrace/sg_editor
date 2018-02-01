@@ -17,13 +17,16 @@
 	"engraveler":{
 		"ENG0":{
 			"item_index":"ENG0",
-			"file":"files[]",
 			"cropper_img":"data/png::",
 			"top":0,
 			"left":0,
 			"width":0,
 			"height":0
 		}
+	},
+
+	"engrave_files":{
+		"ENG0":"file[]"
 	},
 
 	"yazilar":{

@@ -3,6 +3,8 @@
     require CLASS_DIR . "CanvasUpload.php";
     require CLASS_DIR . "ImageUpload.php";
     require CLASS_DIR . "AH_Editor_Image.php";
+    require CLASS_DIR . "PorselenSiparis.php";
+    require CLASS_DIR . "BaslikSiparis.php";
 
     
     if( $_POST ){
@@ -17,26 +19,47 @@
             case 'ah_editor':
                 $Image = new AH_Editor_Image( Input::get("text"), Input::get("font"), Input::get("old_img"), Input::get("text_color"));
                 if( !$Image->generate() ){
-                  $OK = 0;
-                  $TEXT = $Image->get_return_text();
+                    $OK = 0;
+                    $TEXT = $Image->get_return_text();
                 } else {
-                  $DATA = array(
-                    "img_src"         => $Image->get_url(),
-                    "old_img"     => $Image->get_old_img()
-                  );
+                    $DATA = array(
+                        "img_src"     => $Image->get_url(),
+                        "old_img"     => $Image->get_old_img()
+                    );
                 }
             break;
 
+            case 'siparis_kaydet':
 
-            // kaydederken, porselenlerin ebatı değişip değişmedigini kontrol edip, porselen_siparislerdeki kayıtları da güncelleyeceğız !!!!!!!!!!!!!!!!!!!!!!!
+              $BaslikSiparis = new BaslikSiparis();
+              if( !$BaslikSiparis->ekle($_FILES, Input::escape($_POST)) ) $OK = 0;
+              $TEXT = $BaslikSiparis->get_return_text();
+
+            break;
+
+            case 'porselen_resim_kontrol':
+                $pors_items = explode("#", $_POST["pors_items"]);
+                $resimsiz_porselenler = array();
+                foreach( $pors_items as $pors_item_parent_id ){
+                    $PorselenSiparis = new PorselenSiparis( array("parent_gid" => Input::get("parent_gid"), "parent_item_id" => $pors_item_parent_id )); 
+                    if( !$PorselenSiparis->is_ok() ){
+                        $resimsiz_porselenler[] = $pors_item_parent_id;
+                    }
+                }
+                if( count($resimsiz_porselenler) > 0 ){
+                    $OK = 0;
+                    $TEXT = implode(", ", $resimsiz_porselenler ) . " kodlu porselen(ler)e resim eklenmemiş.";
+                }
+            break;
 
         }
        
         $output = json_encode(array(
             "ok"           => $OK,           
             "text"         => $TEXT,         
-            "data"         => $DATA
-            //"oh"           => Input::escape($_POST)
+            "data"         => $DATA,
+            "oh"           => Input::escape($_POST),
+            "foh"          => $_FILES
         ));
 
         echo $output;
@@ -138,7 +161,6 @@
                   <h4 class="modal-title">Porselen Resim Ekle</h4>
                </div>
               <div class="modal-body">
-                 
                   <div class="row">
                       
                       <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
@@ -206,7 +228,7 @@
                           </div>
                       </div>
 
-                      <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
+                      <!-- <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
                           <div class="title-part">Kalp</div>
                           <div class="prev-part"><img src="<?php echo URL_IMGS  ?>porselen_kalp.png" /></div>
                           <div class="form-part">
@@ -217,7 +239,7 @@
                           <div class="nav-part">
                               <button class="btn btn-xs btn-success porselen-ekle" data="kalp-seri" prev-src="<?php echo URL_IMGS ?>porselen_kalp.png" ><i class="fa fa-plus"></i> Ekle</button>
                           </div>
-                      </div>
+                      </div> -->
 
                   </div>
 
@@ -231,17 +253,22 @@
       </div>
 
       <div id="porselen_resim_upload_modal" class="modal fade" role="dialog">
-         <div class="modal-dialog">
+         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal">&times;</button>
                   <h4 class="modal-title">Porselen Resim Ekleme</h4>
                </div>
                <div class="modal-body">
-                    <iframe def-src="porselen_baski_editor.php" src="porselen_baski_editor.php" id="editor_frame"></iframe>
+                    <div class="row" style="margin-bottom:20px">
+                        <div class="col-md-12 col-xs-12 col-sm-12">
+                          <span>Resmi taşa yerleştirme işleminiz bittikten sonra <button type="button" disabled class="disabled btn btn-xs btn-success"><i class="fa fa-save"></i> Kaydet</button> butonuna basıp, işleminizi kaydedin.</span>
+                        </div>
+                    </div>
+                    <iframe def-src="porselen_baski_editor.php" src="porselen_baski_editor.php" id="portable_porselen_editor_frame"></iframe>
                </div>
                <div class="modal-footer">
-                   <button class="btn btn-sm btn-success" id="porselen_resim_upload_btn"><i class="fa fa-check"></i> Tamam</button>
+                   <button class="btn btn-sm btn-success" data-dismiss="modal"><i class="fa fa-check"></i> Bitir</button>
                    <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
                </div>
             </div>
@@ -413,6 +440,24 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">İsim *</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input type="text" class="form-control" id="isim" value="<?php echo Guest::get_data("user_name") ?>" /> 
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Telefon</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input type="text" class="form-control" id="telefon" value="<?php echo Guest::get_data("user_telefon") ?>" /> 
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Eposta</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input type="text" class="form-control" id="eposta" value="<?php echo Guest::get_data("user_email") ?>" /> 
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label class="control-label col-md-3 col-sm-3 col-xs-12">Notlar</label>
                                 <div class="col-md-9 col-sm-9 col-xs-12">
                                     <textarea class="form-control" id="not"></textarea> 
@@ -494,8 +539,6 @@
                 engrave_temp_file = null,
                 // finito önizleme ss
                 temp_canvas = null;
-              
-
             var // editor taş elementi
                 tas = $(".tas"),
                 // porselen item template
@@ -515,7 +558,8 @@
                 cropper_img = $("#cropper_img"),
                 modals = { finito_modal:$("#finito_modal"), porselen_resim_modal: $("#porselen_resim_modal"), engrave_resim_modal:$("#engrave_resim_modal"), yazi_ekleme_modal: $("#yazi_ekleme_modal"), genel_urunler_modal:$("#genel_urunler_modal"), porselen_resim_upload_modal:$("#porselen_resim_upload_modal") },
                 yazi_ekle_btn = $("#yazi_ekle"),
-                porselen_editor_iframe = $("#editor_frame");
+                porselen_editor_iframe = $("#portable_porselen_editor_frame"),
+                siparis_yukle_btn = $("#siparis_yukle");
 
             var Siparis = {
                 // siparis gid ( porselenler icin )
@@ -524,6 +568,7 @@
                 tas_ebat: { w:50, h:50 },
                 porselenler:  {},
                 engraveler:    {},
+                engrave_files: {},
                 yazilar:      {},
                 sekiller:     {},
                 porselen_item_index: 0,
@@ -557,6 +602,61 @@
                             this.sekil_item_index++;
                         break;
                     }
+                },
+                kaydet: function(){
+                    if( !window.FormData ){
+                        // form data yoksa error vericez
+                        // önizlemeyi bi sekilde ulastirabilirsek guzel olur
+                        alert("Sitemiz kullandığınız tarayıcı versiyonunu desteklemiyor. Yalnızca önizleme yapabilirsiniz.");
+                        return false;
+                    }
+                    var isim_val = $("#isim").val(), telefon_val = $("#telefon").val(), eposta_val = $("#eposta").val();
+                    if( trim(isim_val) == "" ){
+                        if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                        PamiraNotify("error", "Hata", "İsim boş bırakılamaz." );  
+                        return;
+                    }
+                    if( trim(telefon_val) == "" && trim(eposta_val) == "" ){
+                        if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                        PamiraNotify("error", "Hata", "Telefon veya Eposta bilgilerinden en az birini girmelisiniz." );  
+                        return;
+                    }
+                    if( trim(eposta_val) != "" && !FormValidation.email(eposta_val) ){
+                        if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                        PamiraNotify("error", "Hata", "Lütfen geçerli bir eposta adresi giriniz.");  
+                        return;
+                    }
+                    siparis_yukle_btn.get(0).disabled = true;
+                    var form_data = new FormData();
+                    form_data.append("req", "siparis_kaydet");
+                    form_data.append("gid", Siparis.gid );
+                    form_data.append("tas_data", JSON.stringify({ tas:Siparis.tas, w:Siparis.tas_ebat.w, h:Siparis.tas_ebat.h }));
+                    form_data.append("porselenler", JSON.stringify(Siparis.porselenler) );
+                    form_data.append("engraveler", JSON.stringify(Siparis.engraveler) );
+                    form_data.append("yazilar", JSON.stringify(Siparis.yazilar) );
+                    form_data.append("sekiller", JSON.stringify(Siparis.sekiller) );
+                    form_data.append("notlar", $("#not").val());
+                    form_data.append("adet", $("#adet").val());
+                    form_data.append("isim", isim_val);
+                    form_data.append("telefon", telefon_val);
+                    form_data.append("eposta", eposta_val);
+                    form_data.append("preview", temp_canvas.toDataURL("image/png") );
+                    for( var key in Siparis.engrave_files )  form_data.append(key+"_file", Siparis.engrave_files[key] );
+                    $.ajax({
+                      url: "",
+                      data: form_data,
+                      processData: false,
+                      contentType: false,
+                      type: 'POST',
+                      success: function( res ){
+                          // contenttype false oldugu icin, parse ediyoruz json responsu manuel olarak
+                          var obj = JSON.parse(res);
+                          //console.log(obj);
+                          if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                          PamiraNotify("success", "İşlem Tamam", obj.text );  
+                          setTimeout(function(){ location.reload(); }, 750);
+                      }
+                    });
                 }
             };
 
@@ -690,6 +790,8 @@
                     case 'sil':
                         parent_node.remove();
                         delete siparis_data_obj[parent_node.attr("item-index")];
+                        // engrave resmini de sil
+                        if( this.getAttribute("tip") == "engrave" ) delete Siparis.engrave_files[parent_node.attr("item-index")];
                     break;
 
                     // sadece porselende var
@@ -738,7 +840,7 @@
             });
 
             // engrave croppper modal daki ayar butonlari
-           $(".cropper-btn").click(function(){
+            $(".cropper-btn").click(function(){
                var req = this.getAttribute("ayar");
                switch(req){
                    // engrave resmi ekleme
@@ -778,13 +880,14 @@
                       // verileri kaydet
                       Siparis.urun_ekle('engrave', {
                             item_index:item_id,
-                            file:engrave_temp_file,
                             cropper_img:cropper.getCroppedCanvas({fillColor: '#fff'}).toDataURL('image/png'),
                             top:0, // [!!ÖNEMLİ!!] top ve left engrave-inner in css detaylari, resmin değil [!!ÖNEMLİ!!]
                             left:0,
                             width:temp_crop_data.w,
                             height:temp_crop_data.h
                       });
+                      // json stringify kullaniyorum, o yuzden upload lari ayrica listeliyorum
+                      Siparis.engrave_files[item_id] = engrave_temp_file;
                       // temp file i resetle
                       engrave_temp_file = null;
                       // cropper i resetle
@@ -808,23 +911,54 @@
                        cropper.rotate(90);
                    break;
                }
-           });
+            });
           
-           $("#finito").click(function(){
+            $("#finito").click(function(){
                 console.log(Siparis);
-                $("[action]").hide();
-                html2canvas(tas.get(0), { async:false }).then(function(canvas) {
-                    temp_canvas = canvas;
-                    // onizleme init
-                    $("#modal_preview").html( canvas );
-                    canvas.style.width = "400px";
-                    canvas.style.height = (400 * Siparis.tas_ebat.h / Siparis.tas_ebat.w)+"px";
-                    modals["finito_modal"].modal("show");
-                    $("[action]").show();
+                // editor boşsa kontrol ediyoruz
+                if( Object.size(Siparis.porselenler) == 0 && Object.size(Siparis.yazilar) == 0 && Object.size(Siparis.sekiller) == 0 && Object.size(Siparis.engraveler) == 0 ){
+                    if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                    PamiraNotify("error", "Hata", "Editöre hiçbirşey eklenmemiş.");  
+                    return;
+                }
+                // tüm porselenlere resim eklenmiş mi kontrol ediyoruz önce
+                var pors_items = [];
+                for( var key in Siparis.porselenler ) pors_items.push(key);
+                // eger hic porselen eklenmemişse kontrol etmiyoruz
+                if( pors_items.length == 0 ){
+                    finito_success_callback();
+                    return;
+                }
+                // tüm porselenlere resim eklenmiş mi kontrol ediyoruz
+                REQ.ACTION("", { req:"porselen_resim_kontrol", parent_gid:Siparis.gid, pors_items:pors_items.join("#") }, function(res){
+                    //console.log(res);
+                    if( res.ok ){
+                        finito_success_callback();
+                    } else {
+                        if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                        PamiraNotify("error", "Hata", res.text );  
+                    }
                 });
-           });
-  
-           $(".genel-urun-ekle").click(function(){
+            });
+
+            function finito_success_callback(){
+               $("[action]").hide();
+                  html2canvas(tas.get(0), { async:false }).then(function(canvas) {
+                      temp_canvas = canvas;
+                      // onizleme init
+                      $("#modal_preview").html( canvas );
+                      canvas.style.width = "400px";
+                      canvas.style.height = (400 * Siparis.tas_ebat.h / Siparis.tas_ebat.w)+"px";
+                      modals["finito_modal"].modal("show");
+                      $("[action]").show();
+                });
+            }
+          
+            siparis_yukle_btn.click(function(){
+                Siparis.kaydet();
+            });
+
+            $(".genel-urun-ekle").click(function(){
                 var _this = $(this);
                 switch( _this.attr("data-type") ){
                     case 'yazi':
@@ -886,7 +1020,7 @@
 
                     break;
                 }
-           });
+            });
 
             // ebatlarin js den selectlerini ekleme
             foreach( $AHC("ebat-select"), function(item){

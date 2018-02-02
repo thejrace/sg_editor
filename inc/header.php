@@ -62,7 +62,7 @@
         <li><a href="<?php echo URL_HIZMETLER ?>" title="">Hizmetler</a></li>
         <!-- <li><a href="./hakkimizda.php" title="">Hakkımızda</a></li> -->
         <li><a href="<?php echo URL_ILETISIM ?>" title="">İletişim</a></li>
-        <li class="nav-siparisler"><a href="#" id="siparislerim" init="false">Siparişlerim & Hesap</a></li>
+        <li class="nav-siparisler"><a href="#" id="siparislerim" init="false">Siparişlerim</a></li>
 
       </ul>
 
@@ -93,7 +93,7 @@
 
             <ul class="nav nav-tabs">
               <li class="active"><a data-toggle="tab" href="#global_siparisler">Siparişlerim</a></li>
-              <li><a data-toggle="tab" href="#global_hesap">Hesap Detayları</a></li>
+              <!-- <li><a data-toggle="tab" href="#global_hesap">Hesap Detayları</a></li> -->
             </ul>
 
             <div class="tab-content">

@@ -720,12 +720,14 @@
                 // duzenleme yapma
                 if( yazi_ekle_btn.attr("duzenleme") == "1" && yazi_ekle_btn.attr("d-item-index") != "-1" ){
                     // veriyi guncelle
-
                     Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].text = AHEditor.text;
                     Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].font = AHEditor.Font_Select.selected_font;
                     Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].color = AHEditor.text_color_input.value;
                     Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].prev_src = AHEditor.preview.src;
                     var elem = $("[item-index='"+yazi_ekle_btn.attr("d-item-index")+"']");
+                    elem.attr("data-renk", AHEditor.text_color_input.value);
+                    elem.attr("data-yazi", AHEditor.text);
+                    elem.attr("data-font", AHEditor.Font_Select.selected_font);
                     // editordeki resmi guncelle
                     elem.find("img").get(0).src = AHEditor.preview.src;
                     // ekleme butonunu resetle
@@ -884,7 +886,8 @@
                             top:0, // [!!ÖNEMLİ!!] top ve left engrave-inner in css detaylari, resmin değil [!!ÖNEMLİ!!]
                             left:0,
                             width:temp_crop_data.w,
-                            height:temp_crop_data.h
+                            height:temp_crop_data.h,
+                            ext: engrave_temp_file.type.toLowerCase()
                       });
                       // json stringify kullaniyorum, o yuzden upload lari ayrica listeliyorum
                       Siparis.engrave_files[item_id] = engrave_temp_file;

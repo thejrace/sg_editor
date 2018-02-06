@@ -29,5 +29,8 @@
 			return $this->details;
 		}
 
+		public function durum_degistir( $durum ){
+			$this->pdo->query("UPDATE " . $this->dt_table ." SET durum = ? WHERE id = ?", array( $durum, $this->details["id"]));
+		}
 
 	}

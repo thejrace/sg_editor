@@ -35,6 +35,10 @@
   </div>
   <div class="col-xs-12 col-md-4 col-sm-12">
 
+       <iframe id="ytplayer" class="yt-tutorial" type="text/html" width="100%"
+            src="https://www.youtube.com/embed/ewu-ls8iG8k" 
+            frameborder="0" allowfullscreen></iframe>
+
       <ul class="porselen-klavuz">  
 
         <li class="text-primary">
@@ -88,14 +92,11 @@
         <li class="text-success">
             <button class="btn btn-sm btn-success disabled"><i class="fa fa-download"></i> Kaydet</button> butonuna bastığınızda önizleme ve form içeren pencere açılacaktır.
             Burada taşın ebatını seçin ve tekrar <button class="btn btn-sm btn-success disabled"><i class="fa fa-check"></i> Tamam</button> butonuna basın.
-            Sipariş, editörün aşağısında bulunan “Siparişler” grubuna eklenecektir.
-        </li>
-        <li class="text-success">
-             <button class="btn btn-sm btn-success disabled"><i class="fa fa-upload"></i> Kaydet</button> butonuna basarak siparişlerinizi sitemize yükleyin.
+            Siparişiniz sepetinize eklenecektir.
         </li>
 
         <li class="text-danger">
-            Siteye yüklenen siparişleri <a href="#">"Taş Tasarlama Editörümüzde"</a> kullanabilirsiniz. Her eklediğiniz sipariş otomatik olarak orada gözükecektir.
+            Sepetinizdeki siparişleri göndermek için, ana menüden "Sepetim" butonuna basın ve açılan pencerenin altındaki "Siparişleri Gönder" butonunu kullanın.
         </li>
       <ul>
   

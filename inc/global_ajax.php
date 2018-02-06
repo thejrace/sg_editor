@@ -1,6 +1,6 @@
 <?php
 	
-	require 'defs.php';
+	require 'defs.php';  
 	
 	if( $_POST ){
 
@@ -11,9 +11,45 @@
         switch( Input::get("req") ){
 
             case 'siparis_download':
-
                 $DATA = User::siparisler_download();
+            break;
+
+            case 'siparis_sil':
+
+                if( Input::get("type") == "porssip"){
+                    require CLASS_DIR . "PorselenSiparis.php";
+                    $PorselenSiparis = new PorselenSiparis( Input::get("item_id") );
+                    $PorselenSiparis->sil();
+                    $TEXT = $PorselenSiparis->get_return_text();
+                } else if( Input::get("type") == "bassip"){
+                    require CLASS_DIR . "BaslikSiparis.php";
+                    $BaslikSiparis = new BaslikSiparis( Input::get("item_id") );
+                    $BaslikSiparis->sil();
+                    $TEXT = $BaslikSiparis->get_return_text();
+                }
+
+            break;
+
+            case 'siparisleri_onayla':
+
+                require CLASS_DIR . "PorselenSiparis.php";
+                require CLASS_DIR . "BaslikSiparis.php";
+                $TEXT = User::siparisleri_onayla();
+
+            break;
+
+            case 'iletisim_formu':
+
+                //require CLASS_DIR . 'phpmailer.php';
+                //require CLASS_DIR . 'SMTP.php';
+                //require CLASS_DIR . 'EpostaBildirim.php';
+                require CLASS_DIR . 'IletisimForm.php';
                 
+                $Form = new IletisimForm;
+                if( !$Form->ekle( Input::escape($_POST) ) ){
+                    $OK = 0;
+                }
+                $TEXT = $Form->get_return_text();
 
             break;
 

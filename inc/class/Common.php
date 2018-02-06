@@ -2,6 +2,15 @@
 
 	class Common {
 
+		public static $SIPARIS_SEPETTE = 1,
+					  $SIPARIS_VERILDI = 2,
+					  $SIPARIS_SILINDI = 3,
+					  $SIPARIS_ONAYLANDI = 4;
+
+		public static $SIPARIS_DURUM_STR = array(
+			"", "Sepette", "Aktif", "Silindi", "Onaylandı"
+		);
+
 		// array sort ederken, hangi key onun icin tanimli
 		protected static $array_key;
 
@@ -59,7 +68,7 @@
 	    	return $str;
 	    }
 
-		public function datetime_reverse( $datetime ){
+		public static function datetime_reverse( $datetime ){
 			$parcala = explode( " ", $datetime );
 			$tarih_tr_format = "";
 			$date_parcala = explode( "-", $parcala[0] );

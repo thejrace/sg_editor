@@ -77,7 +77,7 @@
           // misafirin db bilgilerini guncelle
           Guest::temp_update_register( $postdata["telefon"], $postdata["eposta"], $postdata["isim"] );
 
-          $this->return_text = "Sipariş Eklendi.";
+          $this->return_text = "Sipariş Sepete Eklendi.";
           return true;
 
       }
@@ -121,12 +121,18 @@
               seri = ?,
               ebat = ?,
               adet = ?,
+              eposta = ?,
+              telefon = ?,
+              isim = ?,
               notlar = ?,
               orjinal_resim_ext = ?,
               edit_data = ? WHERE id = ?", array(
                 $postdata["seri"],
                 $postdata["ebat"],
                 $postdata["adet"],
+                $postdata["eposta"],
+                $postdata["telefon"],
+                $postdata["isim"],
                 $postdata["notlar"],
                 $orjinal_resim_ext,
                 str_replace("&quot;", '"', $postdata["edit_data"]),
@@ -139,6 +145,19 @@
           $this->return_text = "Sipariş güncellendi.";
           return true;
 
+      }
+
+      public function sil(){
+           // db den sil
+           $this->pdo->query("DELETE FROM " . $this->dt_table . " WHERE id = ?",array( $this->details["id"]));
+
+           // resimleri sil
+           unlink( UPLOADS_DIR_PORSELEN . "SGO" . $this->details["gid"] . "." . $this->details["orjinal_resim_ext"] );
+           unlink( UPLOADS_DIR_PORSELEN . "SGC" . $this->details["gid"] . ".png" );
+           unlink( UPLOADS_DIR_PORSELEN . "SGP" . $this->details["gid"] . ".png" );
+
+           $this->return_text = "Sipariş silindi.";
+           return true;
       }
 
       public function ebat_guncelle( $yeniebat ){

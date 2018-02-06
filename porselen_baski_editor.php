@@ -554,20 +554,22 @@
                   }
 
                   var isim_val = $("#isim").val(), telefon_val = $("#telefon").val(), eposta_val = $("#eposta").val();
-                  if( trim(isim_val) == "" ){
-                      if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
-                      PamiraNotify("error", "Hata", "İsim boş bırakılamaz." );  
-                      return;
-                  }
-                  if( trim(telefon_val) == "" && trim(eposta_val) == "" ){
-                      if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
-                      PamiraNotify("error", "Hata", "Telefon veya Eposta bilgilerinden en az birini girmelisiniz." );  
-                      return;
-                  }
-                  if( trim(eposta_val) != "" && !FormValidation.email(eposta_val) ){
-                      if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
-                      PamiraNotify("error", "Hata", "Lütfen geçerli bir eposta adresi giriniz.");  
-                      return;
+                  if( !portable ){
+                      if( trim(isim_val) == "" ){
+                          if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                          PamiraNotify("error", "Hata", "İsim boş bırakılamaz." );  
+                          return;
+                      }
+                      if( trim(telefon_val) == "" && trim(eposta_val) == "" ){
+                          if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                          PamiraNotify("error", "Hata", "Telefon veya Eposta bilgilerinden en az birini girmelisiniz." );  
+                          return;
+                      }
+                      if( trim(eposta_val) != "" && !FormValidation.email(eposta_val) ){
+                          if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                          PamiraNotify("error", "Hata", "Lütfen geçerli bir eposta adresi giriniz.");  
+                          return;
+                      }
                   }
 
                   // form kontrolleri yapiyoruz

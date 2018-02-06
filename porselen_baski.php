@@ -5,7 +5,14 @@
 ?>
 
 <main class="" id="main-collapse">
-
+<div class="row editor-ilan">
+    <div class="col-md-6 col-sm-12 col-xs-12">
+          <a href="<?php echo URL_BASLIK_EDITOR ?>"><img src="<?php echo URL_IMGS ?>editor_ilan.png" /></a>
+    </div>
+    <div class="col-md-6 col-sm-12 col-xs-12">
+         <a href="<?php echo URL_PORSELEN_BASKI_SIPARIS ?>"><img src="<?php echo URL_IMGS ?>porselen_editor_ilan.png" /></a>
+    </div>
+</div>
 
 <div class="row">
 

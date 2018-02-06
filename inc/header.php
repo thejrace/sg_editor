@@ -36,7 +36,6 @@
 
 <body>
 
- <!-- Add your content of header -->
 <header class="">
   <div class="navbar navbar-default visible-xs">
     <button type="button" class="navbar-toggle collapsed">
@@ -60,9 +59,13 @@
       <ul class="nav">
         <li><a href="<?php echo URL_MAIN ?>" title="">Ana Sayfa</a></li>
         <li><a href="<?php echo URL_HIZMETLER ?>" title="">Hizmetler</a></li>
+
+        <li><a href="<?php echo URL_BASLIK_EDITOR ?>" title="">Mezar Tasarım Editörü</a></li>
+        <li><a href="<?php echo URL_PORSELEN_BASKI_SIPARIS ?>" title="">Porselen Baskı Editörü</a></li>
+        
         <!-- <li><a href="./hakkimizda.php" title="">Hakkımızda</a></li> -->
         <li><a href="<?php echo URL_ILETISIM ?>" title="">İletişim</a></li>
-        <li class="nav-siparisler"><a href="#" id="siparislerim" init="false">Siparişlerim</a></li>
+        <li class="nav-siparisler"><a href="#" id="siparislerim" refresh-tetik="true">Sepetim</a></li>
 
       </ul>
 
@@ -75,7 +78,7 @@
             <i class="fa fa-facebook"></i>
           </a>
         </p>
-        <p>© Sucuoğlu Granit 2018 <a href="#" title="obarey inc.">obarey</a></p>
+        <p>© Sucuoğlu Granit 2018 <a href="#" title="obarey inc."></a></p>
       </nav>  
     </div> 
   </nav>
@@ -102,24 +105,7 @@
 
                   <div class="row">
                     <ul class="clearfix" id="siparisler_list">
-                        <li class="siparis-item" id="sipID">
-                            <div class="row">
-                                <div class="siparis-top col-md-12 col-sm-12 col-xs-12">
-                                    <!-- <img src="<?php echo URL_UPLOADS_PORSELEN ?>SGP3_XN08fOwFmTMK0mgsq5VoknfDW6bNXB.png" /> -->
-                                </div>
-                                <div class="sip-display col-md-12 col-sm-12 col-xs-12">
-                                    <span class="text-muted">Porselen Baskı</span>
-                                    <span class="text-danger">Daire</span>
-                                    <span class="text-info">2 adet 9x12 cm</span>
-                                </div>
-                                <div class="siparisler-nav col-md-12 col-sm-12 col-xs-12">
-                                    <div class="sip-display">
-                                      <i class="fa fa-edit sip-duzenle" parent="sipID" title="Düzenle"></i>
-                                      <i class="fa fa-remove sip-sil" parent="sipID" title="Sil"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
+                        
                         
                     </ul>
                     
@@ -143,8 +129,8 @@
    </div>
 </div>
 
-<script type="text/template">  
-  <li class="siparis-item" id="sip%%ITEM_ID%%">
+<script type="text/template" id="siparis_tema">  
+  <li class="siparis-item %%TYPE%%" id="sip%%ITEM_ID%%">
       <div class="row">
           <div class="siparis-top col-md-12 col-sm-12 col-xs-12">
               <img src="%%IMGSRC%%" />
@@ -157,7 +143,7 @@
           <div class="siparisler-nav col-md-12 col-sm-12 col-xs-12">
               <div class="sip-display">
                 <i class="fa fa-edit sip-duzenle" parent="sip%%ITEM_ID%%" title="Düzenle"></i>
-                <i class="fa fa-remove sip-sil" parent="sip%%ITEM_ID%%" title="Sil"></i>
+                <i class="fa fa-remove sip-sil" type="%%TYPE%%" parent="sip%%ITEM_ID%%" title="Sil"></i>
               </div>
           </div>
       </div>
@@ -175,28 +161,72 @@
                       kare:["10x10 cm", "15x15 cm", "20x20 cm"],
                       kubbe:[ "10x14 cm", "15x20 cm", "18x24 cm"]};
 
+
+
     $(document).ready(function(){
         var sip_modal = $("#siparisler_modal"),
-            sip_list  = $("#siparisler_list");
+            sip_list  = $("#siparisler_list"),
+            sip_tema  = $("#siparis_tema");
         $("#siparislerim").click(function(){
-            var _this = this;
-            if( this.getAttribute("init") == "false" ){
+            var _this = this, html = "";
 
-                REQ.ACTION("inc/global_ajax.php", {req:"siparis_download"}, function( res ){
-
-                    
-
-                    _this.setAttribute("init", true);
-                });
-
-            } else {
-
-            }
+            REQ.ACTION("inc/global_ajax.php", {req:"siparis_download"}, function( res ){
+                //console.log(res);
+                for( var k = 0; k < res.data.baslik_siparisleri.length; k++ ){
+                    html += sip_tema.html().replace("%%V1%%", "Başlık Siparis").
+                                            replace("%%V2%%", "").
+                                            replace("%%V3%%", res.data.baslik_siparisleri[k].adet + " adet" ).
+                                            replace("%%IMGSRC%%", "<?php echo URL_UPLOADS_BASLIK?>" + res.data.baslik_siparisleri[k].gid + "/PREV.png" ).
+                                            replace("%%ITEM_ID%%", res.data.baslik_siparisleri[k].id ).
+                                            replace("%%ITEM_ID%%", res.data.baslik_siparisleri[k].id ).
+                                            replace("%%ITEM_ID%%", res.data.baslik_siparisleri[k].id ).
+                                            replace("%%TYPE%%", "bassip" ).
+                                            replace("%%TYPE%%", "bassip" );
+                }
+                for( var k = 0; k < res.data.porselen_siparisleri.length; k++ ){
+                    html += sip_tema.html().replace("%%V1%%", "Porselen Sipariş").
+                                            replace("%%V2%%", res.data.porselen_siparisleri[k].seri ).
+                                            replace("%%V3%%", res.data.porselen_siparisleri[k].adet + " adet " + res.data.porselen_siparisleri[k].ebat ).
+                                            replace("%%IMGSRC%%", "<?php echo URL_UPLOADS_PORSELEN?>" + "SGP" + res.data.porselen_siparisleri[k].gid + ".png" ).
+                                            replace("%%ITEM_ID%%", res.data.porselen_siparisleri[k].id ).
+                                            replace("%%ITEM_ID%%", res.data.porselen_siparisleri[k].id ).
+                                            replace("%%ITEM_ID%%", res.data.porselen_siparisleri[k].id ).
+                                            replace("%%TYPE%%", "porssip" ).
+                                            replace("%%TYPE%%", "porssip" );
+                }
+                sip_list.html(html);
+            });
             sip_modal.modal('show');
-
         });
 
-       
+        $(document).on("click", ".sip-duzenle", function(){
+            window.open("<?php echo URL_PORSELEN_BASKI_SIPARIS ?>?item_id="+this.getAttribute("parent").substring(3), "_blank");
+        });
+        $(document).on("click", ".sip-sil", function(){
+            var alert = confirm("Siparişi silmek istediğinize emin misiniz?"),
+                parent = $("#"+this.getAttribute("parent"));
+            if( alert ){
+                REQ.ACTION("inc/global_ajax.php", { req:"siparis_sil", type:this.getAttribute("type"), item_id:this.getAttribute("parent").substring(3) }, function(res){
+                    //console.log(res);
+                    PamiraNotify("success", "İşlem Başarılı", res.text);
+                    parent.remove();
+                });
+            }
+        });
+
+        $("#siparisleri_gonder_global").click(function(){
+            PamiraNotify("info", "İşlem Yapılıyor", "Siparişleriniz gönderiliyor...");
+            REQ.ACTION("inc/global_ajax.php", {req:"siparisleri_onayla"}, function(res){
+                if( res.ok ){
+                    sip_list.html("");
+                    if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                    PamiraNotify("success", "İşlem Başarılı", res.text);
+                } else {
+                    PamiraNotify("error", "Bir hata oluştu.", res.text);
+                }
+            });
+
+        });
 
     });
 

@@ -1,12 +1,10 @@
 <?php
    require 'inc/defs.php';
-   require 'inc/header.php';
-
    $KONU = "";
    if( isset($_GET["konu"]) ){
       $KONU = $_GET["konu"];
    }
-
+   require 'inc/header.php';
 ?>
 
 
@@ -22,19 +20,20 @@
       <p>Mesaj, telefon, WhatsApp veya eposta aracılığıyla bizimle iletişim kurun. Bilgilerimiz aşağıdadır..</p>
     </div>
     <div class="section-container-spacer">
-       <form action="" class="reveal-content">
+       <form action="" class="reveal-content" id="iletisimform">
           <div class="row">
             <div class="col-md-6">
+              <input type="hidden" name="req" value="iletisim_formu" />
               <div class="form-group">
-                <input type="email" class="form-control" id="eposta" name="eposta" placeholder="Eposta">
+                <input type="email" class="form-control req email" id="eposta" name="eposta"  placeholder="Eposta">
               </div>
               <div class="form-group">
                 <input type="text" class="form-control" name="konu" id="konu" placeholder="Konu" value="<?php echo $KONU ?>" />
               </div>
               <div class="form-group">
-                <textarea class="form-control" name="mesaj" id="mesaj" rows="3" placeholder="Mesajınız"></textarea>
+                <textarea class="form-control req" name="mesaj" id="mesaj" rows="3" placeholder="Mesajınız"></textarea>
               </div>
-              <button type="submit" class="btn btn-primary btn-lg">Gönder</button>
+              <button type="button" class="btn btn-primary btn-lg" id="form_gonder">Gönder</button>
             </div>
             <div class="col-md-6">
               <ul class="list-unstyled address-container">
@@ -91,6 +90,29 @@
 document.addEventListener("DOMContentLoaded", function (event) {
   navbarToggleSidebar();
   navActivePage();
+
+    var form = $("#iletisimform");
+    $("#form_gonder").click(function(){
+        if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+        PamiraNotify("info", "İşlem Yapılıyor", "Mesajınız gönderiliyor..");
+        if( FormValidation.check(form.get(0))){
+            REQ.ACTION("inc/global_ajax.php", form.serialize(), function(res){
+                if( res.ok ){
+                    if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                    PamiraNotify("success", "İşlem Başarılı", res.text);
+                    form.get(0).reset();
+                } else {
+                    if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                    PamiraNotify("error", "Hata", res.text);
+                }
+            });
+        } else {
+            if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+            PamiraNotify("error", "Hata", "Formda eksiklikler var.");
+        }
+        
+
+    });
 
 
     var myMap;

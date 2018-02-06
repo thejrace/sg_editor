@@ -87,9 +87,25 @@
 			// misafirin db bilgilerini guncelle
 			Guest::temp_update_register( $postdata["telefon"], $postdata["eposta"], $postdata["isim"] );
 
-			$this->return_text = "Sipariş alındı.";
+			$this->return_text = "Sipariş sepete eklendi.";
 			return true;
 		}
+
+		public function get_porselenler(){
+			return $this->pdo->query("SELECT * FROM " . DBT_PORSELEN_SIPARISLERI . " WHERE parent_gid = ?", array( $this->details["gid"]))->results();
+		}
+
+		public function sil(){
+        	// db den sil
+        	$this->pdo->query("DELETE FROM " . $this->dt_table ." WHERE id = ?", array($this->details["id"])); 
+        	// porselen siparisleri sil
+        	$this->pdo->query("DELETE FROM " . DBT_PORSELEN_SIPARISLERI ." WHERE parent_gid = ?", array($this->details["gid"]));
+        	// tum klasorü içindekilerle sil
+        	array_map('unlink', glob(UPLOADS_DIR_BASLIK . $this->details["gid"]."/*.*"));
+        	rmdir(UPLOADS_DIR_BASLIK . $this->details["gid"]);
+        	$this->return_text = "Sipariş silindi.";
+        	return true;
+      	}
 
 
 	}

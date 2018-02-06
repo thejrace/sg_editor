@@ -850,53 +850,50 @@ var jwTab = function( options ){
 var FormValidation = {
 	errors: [],
 	list: [],
-	form_prefix: "",
 	error_messages: {
-		posnum: "Numerik veya sıfırdan büyük olmalıdır.",
+		posnum: "Numerik ve sıfırdan büyük olmalıdır.",
+		numeric: "Numerik değer giriniz.",
 		req: "Boş bırakılamaz.",
 		not_zero: "Sıfırdan büyük olmalıdır.",
-		numeric: "Yalnızca rakam içermelidir.",
-		email: "Lütfen geçerli bir eposta adresi girin."
+		email: "Lütfen geçerli bir email adresi girin.",
+		select_not_zero: "Lütfen seçim yapınız."
 	},
 	submit_btns:[],
 	find_inputs: function (f){
-			// Listeyi her kontrol Ã¶ncesi bosalt
-			this.list = [];
-			this.form_prefix = f.id;
-			var form = f, i;
-			// ilk versiyonda tum inputlari listeliyordum
-			//artik kontrol class i olanlari aliyoruz sadee
-			for( i = 0; i <= form.elements.length; i++ ){
-
-				//console.log(form.elements[i]);
-				if( form.elements[i] != undefined ) {
-					if( form.elements[i].getAttribute("disabled") != undefined ) continue;
-					if( 
-						hasClass( form.elements[i], "posnum" ) ||
-						hasClass( form.elements[i], "req" )  ||
-						hasClass( form.elements[i], "not_zero" )  ||
-						hasClass( form.elements[i], "numeric" )  ||
-						hasClass( form.elements[i], "email" ) 
-						) {
-						if( form.elements[i].type == "text" ||
-							form.elements[i].type == "textarea" ||
-							form.elements[i].type == "password" ||
-							form.elements[i].type == "email" ||
-							form.elements[i].type == "select-one" ||
-							form.elements[i].type == "select-multiple" ||
-							form.elements[i].type == "checkbox"
-							) this.list.push( form.elements[i] );
-						// Radio secildiyse
+		// Listeyi her kontrol öncesi bosalt
+		this.list = [];
+		var form = f, i;
+		// ilk versiyonda tum inputlari listeliyordum
+		//artik kontrol class i olanlari aliyoruz sadee
+		for( i = 0; i <= form.elements.length; i++ ){
+			if( form.elements[i] != undefined ) {
+				if( 
+					hasClass( form.elements[i], "posnum" ) ||
+					hasClass( form.elements[i], "posnum" ) ||
+					hasClass( form.elements[i], "req" )  ||
+					hasClass( form.elements[i], "not_zero" )  ||
+					hasClass( form.elements[i], "select_not_zero" )  ||
+					hasClass( form.elements[i], "email" ) 
+				) {
+					if( form.elements[i].type == "text" ||
+						form.elements[i].type == "textarea" ||
+						form.elements[i].type == "password" ||
+						form.elements[i].type == "email" ||
+						form.elements[i].type == "select-one" ||
+						form.elements[i].type == "select-multiple" ||
+						form.elements[i].type == "checkbox"
+						) this.list.push( form.elements[i] );
+					// Radio secildiyse
 					if( form.elements[i].type == "radio" ){
 						if( form.elements[i].checked ) this.list.push( form.elements[i] );
 					}
 				}
-					// submit btn
-					if( form.elements[i].type == "submit" ) this.submit_btns.push( form.elements[i] );
-				}
+				// submit btn
+				if( form.elements[i].type == "submit" ) this.submit_btns.push( form.elements[i] );
 			}
-			// this.keyup( f );
-		},
+		}
+		this.keyup( f );
+	},
 	check: function(f){
 		this.find_inputs(f);
 		this.check_input( this.list );
@@ -904,19 +901,28 @@ var FormValidation = {
 			return true;
 		} else {
 			this.show_errors();
-			this.keyup(f);
-			// return false;
 		}
 	},
 	// form submit esnasinda tum submit butonlari disabled yap
 	// birden fazla olabilir submit o yuzden array
+	disable_submit_btn: function( flag ){
+		var status_text, i, prevtext = "Kaydet";
+		if( this.submit_btns[0].getAttribute("oldval") != undefined ) prevtext = this.submit_btns[0].getAttribute("oldval");
+		for( i = 0; i < this.submit_btns.length; i++ ){
+
+			status_text = "Lütfen bekleyin..."
+			if( !flag ) status_text = prevtext;
+			this.submit_btns[i].disabled = flag;
+			this.submit_btns[i].value = status_text;
+		}
+	},
 	get_input_list: function(){
 		return this.list;
 	},
 	check_input: function(input){
 		// Toplu kontrol
 		var elem, i, x;
-		input_count = input.length;
+			input_count = input.length;
 		// gelen inputlarin sayisini inputlar array halinde geldiginde aliyoruz
 		// eger tek bir input gelirse length = undefined oluyor. buradan tek input geldigini anlayip
 		// loop icin son limiti 1 yapiyoruz yani bir kere loop yapiyor.
@@ -937,28 +943,18 @@ var FormValidation = {
 		return ( this.errors.length == 0 );
 	},
 	show_serverside_errors: function( errors ){
-		for( var i = 0; i < this.list.length; i++ ){
-			var error_index = (this.list[i].id).substr( this.form_prefix.length + 1 );
-			if( errors[ error_index ] != undefined ){
-
-				if( !hasClass( this.list[i], "redborder" ) ){
-					html = '<div class="input-error">'+errors[ error_index ]+'</div>';
-					addClass( this.list[i], "redborder" );
-					append_html( this.list[i].parentNode, html );	
-				}
-			}
-		}
-		// form prefix formun id si, keyup u burda yapiyoruz
-		this.keyup($AH(this.form_prefix));
+		this.errors = errors;
+		this.show_errors();
 	},
 	show_errors: function(){
-		var co = this.errors.length, html = "";
+		var co = this.errors.length;
 		for( var i = 0; i < co; i++ ){
-			if( !hasClass( this.errors[i][0], "redborder" ) ){
-				html = '<div class="input-error">'+this.errors[i][1]+'</div>';
-				addClass( this.errors[i][0], "redborder" );
-				append_html( this.errors[i][0].parentNode, html );	
-			}	
+			// input'un kontrol parent'ina error notf divini ekle
+			var elem = this.errors[i][0];
+			// Hata zaten varsa yeni error divleri yapma
+			if( !hasClass(elem, "redborder") ){
+				addClass(elem, "redborder");
+			}
 		}
 		// Hatalari gosterdikten sonra bosalt
 		// Bir önce kontrol edilen formun hatalarindan kurtulmak
@@ -973,10 +969,13 @@ var FormValidation = {
 				if( hasClass(pc[i], "input-error") ) {
 					p.removeChild(p.childNodes[i]);
 				}
-			}
-		},
-	numeric: function(val){
-		return (val - 0) == val && trim( (''+val) ).length > 0;
+		}
+	},
+	close_error_dialogue: function( error_div ){
+		console.log( error_div );
+	},
+	numeric: function( val ){
+		return !isNaN(val);
 	},
 	posnum: function( val ){
 		// console.log( val );
@@ -990,18 +989,33 @@ var FormValidation = {
 	req: function( val ){
 		return !( trim( val ) == "" || val == undefined );
 	},
-
-	email: function( val ){
-		var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-		return re.test(val);
+	select_not_zero: function(val){
+		return val != 0;
 	},
 	int_only: function( val ){
 		var str = val.toString();
 		return !(str.indexOf(".") != -1 );
 	},
+	email: function( val ){
+		if( trim(val) == "" ) return true;
+		var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			return re.test(val);
+	},
 	// keyuta error gizleme
 	keyup: function (form){
-		add_event_on( form, ".redborder", "keyup", function(targ, e ){ FormValidation.hide_error( targ ) });
+		$(form).on("keyup", ".req, .posnum, .email, .not_zero", function(){
+			if(hasClass(this, "redborder")) removeClass(this, "redborder");
+		});
+		$(form).on("change", ".select_not_zero", function(){
+			if(hasClass(this, "redborder")) removeClass(this, "redborder");
+		});
+	},
+	error_to_pnotfiy: function( inputret ){
+		var str = "";
+		for( var key in inputret ){
+			str += inputret[key] + "</br>";
+		}
+		return str;
 	}
 };
 

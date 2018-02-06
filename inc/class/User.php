@@ -148,10 +148,23 @@
 
 		public static function siparisler_download(){
 			$data = array();
-			$data["porselen_siparisleri"] = DB::getInstance()->query("SELECT seri, ebat, adet, onizleme_url FROM " . DBT_PORSELEN_SIPARISLERI . " WHERE kullanici = ?", array( self::get_data("user_id")))->results();
+			$data["porselen_siparisleri"] = DB::getInstance()->query("SELECT id, gid, seri, ebat, adet FROM " . DBT_PORSELEN_SIPARISLERI . " WHERE parent_gid IS NULL && parent_item_id IS NULL && kullanici = ? && durum = ?", array( self::get_data("user_id"), 1))->results();
 			// basliklarda, porselenler engraveler falan da olacak
-			$data["baslik_siparisleri"] = array();
+			$data["baslik_siparisleri"] = DB::getInstance()->query("SELECT id, gid, adet FROM " . DBT_BASLIK_SIPARISLERI . " WHERE kullanici = ? && durum = ?", array( self::get_data("user_id"), 1 ))->results();
 			return $data;
+		}
+
+		public static function siparisleri_onayla(){
+			$data = self::siparisler_download();
+			foreach( $data["baslik_siparisleri"] as $sip ){
+				$Siparis = new BaslikSiparis( $sip["id"] );
+				$Siparis->durum_degistir( Common::$SIPARIS_ONAYLANDI );
+			}
+			foreach( $data["porselen_siparisleri"] as $sip ){
+				$Siparis = new PorselenSiparis( $sip["id"] );
+				$Siparis->durum_degistir( COmmon::$SIPARIS_ONAYLANDI );
+			}
+			return "Siparişler onaylandı.";
 		}
 
 	}

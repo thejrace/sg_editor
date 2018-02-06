@@ -19,7 +19,7 @@
     <img class="img-responsive" alt="" src="./assets/images/granithizmet.png">
     <h2>Granit & Mermer İşleme - Engrave Baskı</h2>
     <p>Granit, mermer mezar başlıkları, apartman yazıları, bilgilendirme tabelaları vb. ürünlere kumlama, renklendirme ve engrave baskı hizmeti sunuyoruz.</p>
-    <a href="<?php echo URL_ILETISIM ?>?konu=Porselen Baskı" class="btn btn-info" title=""> Detaylar</a>
+    <a href="<?php echo URL_BASLIK_EDITOR ?>" class="btn btn-info" title=""> Detaylar</a>
     <a href="<?php echo URL_ILETISIM ?>?konu=Granit - Mermer İşleme" class="btn btn-primary" title=""> Bizimle İletişime Geçin</a>
   </div>
 

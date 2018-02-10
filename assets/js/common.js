@@ -1161,12 +1161,14 @@ var REQ = {
 	}
 };
 
-function PamiraNotify( type, header, text ){
+function PamiraNotify( type, header, text, hide ){
+	if( hide == undefined ) hide = true;
 	new PNotify({
           title: header,
           text: text,
           type: type,
-          styling: 'bootstrap3'
+          styling: 'bootstrap3',
+          hide: hide
       });
 }
 

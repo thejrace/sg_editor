@@ -1,7 +1,7 @@
 <?php
 
-	//define("MAIN_DIR", $_SERVER["DOCUMENT_ROOT"] . "/sg_editor/");
-	define("MAIN_DIR", $_SERVER["DOCUMENT_ROOT"] . "/beta/");
+	define("MAIN_DIR", $_SERVER["DOCUMENT_ROOT"] . "/sg_editor/");
+	//define("MAIN_DIR", $_SERVER["DOCUMENT_ROOT"] . "/beta/");
 	define("INC_DIR", MAIN_DIR . "inc/");
 	define("CLASS_DIR", INC_DIR . "class/");
 	
@@ -11,13 +11,14 @@
 	define("UPLOADS_DIR", MAIN_DIR . "uploads/");
 	define("UPLOADS_DIR_PORSELEN", UPLOADS_DIR . "porselen_siparisler/");
 	define("UPLOADS_DIR_BASLIK", UPLOADS_DIR . "baslik_siparisler/");
+	define("UPLOADS_TEMP", UPLOADS_DIR . "temp_files/");
 	define("AH_EDITOR_DIR", UPLOADS_DIR . "ah_editor/");
 	define("AH_EDITOR_IMGS_DIR", AH_EDITOR_DIR . "imgs/");
 	define("AH_EDITOR_FONTS_DIR", AH_EDITOR_DIR . "fonts/");
 
 
-	//define("URL_MAIN", "http://localhost/sg_editor/");
-	define("URL_MAIN", "http://sucuoglugranit.com/beta/");
+	define("URL_MAIN", "http://localhost/sg_editor/");
+	//define("URL_MAIN", "http://sucuoglugranit.com/beta/");
 	define("URL_ASSETS", URL_MAIN . "assets/");
 	define("URL_JS", URL_ASSETS . "js/");
 	define("URL_CSS", URL_ASSETS . "css/");
@@ -52,18 +53,19 @@
 	define("DBT_COOKIE_TOKENS", "cookie_tokens");
 	define("DBT_MISAFIRLER", "misafirler");
 	define("DBT_ILETISIM_FORMLARI", "iletisim_formlari");
+	define("DBT_TEMP_UPLOADS", "temp_uploads");
 
 
 	ini_set('error_log', MAIN_DIR . "error.log");
-	/*define("DB_NAME", "sucuoglu_granit");
+	define("DB_NAME", "sucuoglu_granit");
 	define("DB_USER", "root");
 	define("DB_PASS", "Dogansaringulu9");
-	define("DB_IP", "localhost:3306");*/
+	define("DB_IP", "localhost:3306");
 
-	define("DB_NAME", "sgv2");
+	/*define("DB_NAME", "sgv2");
 	define("DB_USER", "sgv2obarey");
 	define("DB_PASS", "WAzzabii308*");
-	define("DB_IP", "94.73.145.26");
+	define("DB_IP", "94.73.145.26");*/
 
 	session_start();
 

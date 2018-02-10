@@ -43,8 +43,8 @@
       );
 
 
-      $p_siparisler = DB::getInstance()->query("SELECT eklenme_tarihi, isim, durum, id, adet FROM " . DBT_PORSELEN_SIPARISLERI . " WHERE durum = ? || durum = ? ORDER BY eklenme_tarihi DESC", array( Common::$SIPARIS_VERILDI, Common::$SIPARIS_ONAYLANDI))->results();
-      $b_siparisler = DB::getInstance()->query("SELECT eklenme_tarihi, isim, durum, id, adet FROM " . DBT_BASLIK_SIPARISLERI . " WHERE durum = ? || durum = ?  ORDER BY eklenme_tarihi DESC ",array( Common::$SIPARIS_VERILDI, Common::$SIPARIS_ONAYLANDI))->results();
+      $p_siparisler = DB::getInstance()->query("SELECT eklenme_tarihi, isim, durum, id, adet FROM " . DBT_PORSELEN_SIPARISLERI . " WHERE durum = ? || durum = ? || durum = ? ORDER BY eklenme_tarihi DESC", array( Common::$SIPARIS_SEPETTE, Common::$SIPARIS_VERILDI, Common::$SIPARIS_ONAYLANDI))->results();
+      $b_siparisler = DB::getInstance()->query("SELECT eklenme_tarihi, isim, durum, id, adet FROM " . DBT_BASLIK_SIPARISLERI . " WHERE durum = ? || durum = ? || durum = ?  ORDER BY eklenme_tarihi DESC ",array( Common::$SIPARIS_SEPETTE, Common::$SIPARIS_VERILDI, Common::$SIPARIS_ONAYLANDI))->results();
 
 
 

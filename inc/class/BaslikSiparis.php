@@ -8,7 +8,26 @@
         	if( isset($id) ) $this->check(array("id" ), $id );
 		}
 
-		public function ekle( $filesdata, $postdata ){
+		public function ekle( $postdata ){
+
+
+			$porselenler_data = json_decode(str_replace("&quot;", '"', $postdata["porselenler"]), true);
+			$engraveler_data  = json_decode(str_replace("&quot;", '"', $postdata["engraveler"]), true); 
+			$yazilar_data  = json_decode(str_replace("&quot;", '"', $postdata["yazilar"]), true); 
+
+			// siparis klasoru olustur
+			$siparis_dir = UPLOADS_DIR_BASLIK . $postdata["gid"];
+			mkdir( $siparis_dir , 0777, true);
+
+			foreach( $engraveler_data as $item_id => $item_data ){
+				
+				
+			}
+
+
+		}
+
+		public function ekle_old( $filesdata, $postdata ){
 
 			$porselenler_data = json_decode(str_replace("&quot;", '"', $postdata["porselenler"]), true);
 			$engraveler_data  = json_decode(str_replace("&quot;", '"', $postdata["engraveler"]), true); 

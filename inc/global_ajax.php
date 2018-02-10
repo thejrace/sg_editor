@@ -53,6 +53,35 @@
 
             break;
 
+            case 'temp_upload':
+                require CLASS_DIR . "ImageUpload.php";
+                require CLASS_DIR . "CanvasUpload.php";
+                require CLASS_DIR . "TempUpload.php";
+
+                $TempUpload = new TempUpload();
+                if( !$TempUpload->ekle_cropped( $_POST, $_FILES ) ){
+                    $OK = 0;
+                }
+                $TEXT = $TempUpload->get_return_text();
+
+            break;
+
+            case 'delete_temp_file':
+
+                require CLASS_DIR . "TempUpload.php";
+                $TempUpload = new TempUpload( array( "parent_gid" => Input::get("parent_gid"), "item_id" => Input::get("item_id")));
+                if( $TempUpload->is_ok() ){
+                    if( !$TempUpload->sil() ){
+                        $OK = 0;
+                    }
+                } else {
+                    $OK = 0;
+                }
+                
+                $TEXT = $TempUpload->get_return_text();
+
+            break;
+
         }
        
         $output = json_encode(array(

@@ -61,44 +61,6 @@
 	background:url('../../images/mermer_texture.png');
 }
 
-.editor-item-list{
-
-}
-
-.editor-item:hover {
-	background:#d3d3d3;
-}
-
-.editor-item {
-    width: 70px;
-    height: 90px;
-    padding: 5px;
-    border: 2px solid #ff6360;
-    margin:5px;
-    float:left;
-    cursor:pointer;
-}
-
-.added-item {
-	width: 70px;
-    height: 90px;
-    cursor:pointer;
-    position:absolute;
-    top:0;
-    left:0;
-}
-
-.editor-item i{
-	display:none;
-}
-
-
-.editor-item img,
-.added-item img {
-	width:100%;
-	margin:0 auto;
-	vertical-align:middle;
-}
 #uploaded,
 #por_uploaded{
 	width:100%;
@@ -607,6 +569,18 @@
 }
 #finito_modal #modal_preview canvas{
 	width:100%;
+}
+
+.upload_img {
+	margin:0 auto;
+}
+#cropper_form span {
+	    display: block;
+    text-align: center;
+    font-size: 25px;
+    color: #ff0000;
+    font-weight: 600;
+    margin-bottom: 10px;
 }
 
 #portable_porselen_editor_frame {

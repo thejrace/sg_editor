@@ -58,7 +58,10 @@
 		}
 
 		public function transfer( $new_src ){
-			
+			rename( UPLOADS_TEMP . $this->details[0]["file_name"] . ".png", $new_src . $this->details[0]["item_id"] . "_cropped.png" );
+			rename( UPLOADS_TEMP . $this->details[1]["file_name"] . "." . $this->details[1]["ext"], $new_src . $this->details[0]["item_id"] . "." . $this->details[1]["ext"] );
+			// db kayitlarini sil
+			$this->sil();
 		}
 
 	}

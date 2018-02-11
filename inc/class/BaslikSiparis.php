@@ -20,14 +20,73 @@
 			mkdir( $siparis_dir , 0777, true);
 
 			foreach( $engraveler_data as $item_id => $item_data ){
-				
-				
+				$Upload = new TempUpload( array("parent_gid" => $postdata["gid"], "item_id" => $item_id));
+				if( $Upload->is_ok() ) $Upload->transfer( $siparis_dir . "/" );		
 			}
 
+			foreach( $porselenler_data as $item_id => $item_data ){
+				$Upload = new TempUpload( array("parent_gid" => $postdata["gid"], "item_id" => $item_id));
+				if( $Upload->is_ok() ) $Upload->transfer( $siparis_dir . "/" );	
+			}
 
+			// ah editor yazilarinin resimlerini sipariş klasorune al
+			foreach( $yazilar_data as $item_id => $item_data ){
+				rename( AH_EDITOR_IMGS_DIR . str_replace( URL_AH_EDITOR_PREVS, "", $item_data["prev_src"] ), $siparis_dir . "/" . $item_id . ".png" );
+			}
+
+			// onizlemeyi upload et
+			if( !CanvasUpload::action( $postdata["preview"], $siparis_dir . "/PREV.png" )){
+	            $this->return_text = "Bir hata oluştu.[3]";
+	            return false;
+	        }
+
+	        $this->pdo->insert($this->dt_table, array(
+				"gid" 				=> $postdata["gid"],
+				"kullanici"   	 	=> User::get_data("user_id"),
+				"notlar" 			=> $postdata["notlar"],
+				"tas_data" 			=> str_replace("&quot;", '"', $postdata["tas_data"]),
+				"adet" 				=> $postdata["adet"],
+				"porselenler" 		=> json_encode($porselenler_data),
+				"engraveler" 		=> json_encode($engraveler_data),
+				"sekiller" 			=> str_replace("&quot;", '"', $postdata["sekiller"]),
+				"yazilar" 			=> json_encode($yazilar_data),
+				"eklenme_tarihi"    => Common::get_current_datetime(),
+				"eposta"            => $postdata["eposta"],
+              	"telefon"           => $postdata["telefon"],
+              	"isim"              => $postdata["isim"],
+				"durum"				=> 1
+			));
+
+			if( $this->pdo->error() ){
+				$this->return_text = "Bir hata oluştu.[".$this->pdo->get_error_message()."]";
+				return false;
+			}
+
+			// misafirin db bilgilerini guncelle
+			Guest::temp_update_register( $postdata["telefon"], $postdata["eposta"], $postdata["isim"] );
+
+			$this->return_text = "Sipariş sepete eklendi.";
+			return true;
 		}
 
-		public function ekle_old( $filesdata, $postdata ){
+		public function get_porselenler(){
+			return $this->pdo->query("SELECT * FROM " . DBT_PORSELEN_SIPARISLERI . " WHERE parent_gid = ?", array( $this->details["gid"]))->results();
+		}
+
+		public function sil(){
+        	// db den sil
+        	$this->pdo->query("DELETE FROM " . $this->dt_table ." WHERE id = ?", array($this->details["id"])); 
+        	// porselen siparisleri sil
+        	$this->pdo->query("DELETE FROM " . DBT_PORSELEN_SIPARISLERI ." WHERE parent_gid = ?", array($this->details["gid"]));
+        	// tum klasorü içindekilerle sil
+        	array_map('unlink', glob(UPLOADS_DIR_BASLIK . $this->details["gid"]."/*.*"));
+        	rmdir(UPLOADS_DIR_BASLIK . $this->details["gid"]);
+        	$this->return_text = "Sipariş silindi.";
+        	return true;
+      	}
+
+      	// @DEPRECATED
+		public function ekle_v1( $filesdata, $postdata ){
 
 			$porselenler_data = json_decode(str_replace("&quot;", '"', $postdata["porselenler"]), true);
 			$engraveler_data  = json_decode(str_replace("&quot;", '"', $postdata["engraveler"]), true); 
@@ -109,22 +168,6 @@
 			$this->return_text = "Sipariş sepete eklendi.";
 			return true;
 		}
-
-		public function get_porselenler(){
-			return $this->pdo->query("SELECT * FROM " . DBT_PORSELEN_SIPARISLERI . " WHERE parent_gid = ?", array( $this->details["gid"]))->results();
-		}
-
-		public function sil(){
-        	// db den sil
-        	$this->pdo->query("DELETE FROM " . $this->dt_table ." WHERE id = ?", array($this->details["id"])); 
-        	// porselen siparisleri sil
-        	$this->pdo->query("DELETE FROM " . DBT_PORSELEN_SIPARISLERI ." WHERE parent_gid = ?", array($this->details["gid"]));
-        	// tum klasorü içindekilerle sil
-        	array_map('unlink', glob(UPLOADS_DIR_BASLIK . $this->details["gid"]."/*.*"));
-        	rmdir(UPLOADS_DIR_BASLIK . $this->details["gid"]);
-        	$this->return_text = "Sipariş silindi.";
-        	return true;
-      	}
 
 
 	}

@@ -2,6 +2,7 @@
     require 'inc/defs.php';
     require CLASS_DIR . "CanvasUpload.php";
     require CLASS_DIR . "ImageUpload.php";
+    require CLASS_DIR . "TempUpload.php";
     require CLASS_DIR . "AH_Editor_Image.php";
     require CLASS_DIR . "PorselenSiparis.php";
     require CLASS_DIR . "BaslikSiparis.php";
@@ -29,10 +30,18 @@
                 }
             break;
 
-            case 'siparis_kaydet':
+            case 'siparis_kaydet_old':
 
               $BaslikSiparis = new BaslikSiparis();
               if( !$BaslikSiparis->ekle($_FILES, Input::escape($_POST)) ) $OK = 0;
+              $TEXT = $BaslikSiparis->get_return_text();
+
+            break;
+
+            case 'siparis_kaydet':
+
+              $BaslikSiparis = new BaslikSiparis();
+              if( !$BaslikSiparis->ekle(Input::escape($_POST)) ) $OK = 0;
               $TEXT = $BaslikSiparis->get_return_text();
 
             break;
@@ -96,6 +105,7 @@
    <body>
       <div class="row porselen-crop-grup section-container-spacer">
             <div class="tas siyah_granit">
+
             </div>
       </div>
       <div class="porselen-editor-ayarlar" >
@@ -270,6 +280,7 @@
                </div>
               <div class="modal-body">
                   <div id="cropper_form">
+                     <span>Bilgisayarınızdan Resim Seçin</span>
                      <input type="file" class="upload_img"  item-type="engrave"/>
                   </div>
                   <div style="height:500px">
@@ -296,6 +307,7 @@
                </div>
                <div class="modal-body">
                   <div id="cropper_form">
+                     <span>Bilgisayarınızdan Resim Seçin</span>
                      <input type="file" class="upload_img" item-type="porselen" />
                   </div>
                   <div style="height:500px">
@@ -410,6 +422,14 @@
                           </div>
                           <div class="nav-part">
                               <button class="btn btn-xs btn-success genel-urun-ekle" init-width="93" init-height="76" data-type="resim" variant="0" data-content="Bayrak Kumlama" prev-src="<?php echo URL_IMGS  ?>kumlama_bayrak.png"><i class="fa fa-plus"></i> Ekle</button>
+                          </div>
+                      </div>
+                      <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
+                          <div class="title-part">Porselen Bayrak</div>
+                          <div class="prev-part"><img src="<?php echo URL_IMGS  ?>por_bayrak.png" /></div>
+                          
+                          <div class="nav-part">
+                              <button class="btn btn-xs btn-success genel-urun-ekle" data-type="porselen" data-content="Türk Bayrağı Oval" data-ebat="9x12 cm" data-seri="oval" data-rotated="true" ><i class="fa fa-plus"></i> Ekle</button>
                           </div>
                       </div>
                   </div>
@@ -541,18 +561,6 @@
          </div>
       </div>
 
-      <script type="text/template" id="porselen_template">
-          <div class="porselen-template %%SERI_CLASS%%" item-index="%%ITEM_INDEX%%" style="width: %%WIDTH%%px; height:%%HEIGHT%%px">
-              <i action="ebat-degistir" tip="porselen" ebat-bool="0" class="fa fa-minus" title="Taşı Küçült"></i>
-              <i action="ebat-degistir" tip="porselen" ebat-bool="1" class="fa fa-plus" title="Taşı Büyüt"></i>
-              <img src="%%PREV_SRC%%" />
-              <span class="porselen-id-info">#%%ID_INFO%%</span>
-              <i action="resim_ekle"  tip="porselen" class="fa fa-image" title="Resim Ekle"></i>
-              <i action="sil"  tip="porselen" class="fa fa-remove" title="Kaldır"></i>
-              <i action="cevir"  tip="porselen" class="fa fa-refresh" title="Çevir"></i>
-          </div>
-      </script>
-
       <script type="text/template" id="yazi_template" >
           <div class="yazi_template" item-index="%%ITEM_INDEX%%" data-renk="%%DATA_RENK%%" data-yazi="%%DATA_YAZI%%" data-font="%%DATA_FONT%%">
                 <img src="%%PREV_SRC%%" />
@@ -578,14 +586,19 @@
           </div>
       </script>
 
-
-      <script type="text/template" id="porselen_template_beta">
-          <div class="porselen-crop-container oval" activeclass="oval">
-            <div id="porselen-draggable">
-               <img id="uploaded" class="img-responsive" alt="" src="">
-            </div>
+      <script type="text/template" id="porselen_template">
+          <div item-index="%%ITEM_INDEX%%" style="width:120px; height:90px; position:absolute; top:0; left:0;">
+              <i action="ebat-degistir" tip="porselen" ebat-bool="0" class="fa fa-minus" title="Taşı Küçült"></i>
+              <i action="ebat-degistir" tip="porselen" ebat-bool="1" class="fa fa-plus" title="Taşı Büyüt"></i>
+              <div class="porselen-crop-container oval" activeclass="oval" style="background-color: rgb(255, 0, 0); overflow: hidden; width: 120px; height: 90px;">
+                  <div class="porselen-draggable" style="top:-3px; left:0">
+                      <img id="por_uploaded" src="<?php echo URL_IMGS ?>por_bayrak_org.png" style="margin: 0px; resize: none; position: static; zoom: 1; display: block; height: 94.2248px; width: 138.366px; opacity: 1;">
+                  </div>
+              </div>
+              <i action="sil"  tip="porselen" class="fa fa-remove" title="Kaldır"></i>
           </div>
       </script>
+
 
       <script>
          $(document).ready(function(){
@@ -719,7 +732,6 @@
                     form_data.append("telefon", telefon_val);
                     form_data.append("eposta", eposta_val);
                     form_data.append("preview", temp_canvas_list["finito"].toDataURL("image/png") );
-                    //for( var key in Siparis.engrave_files )  form_data.append(key+"_file", Siparis.engrave_files[key] );
                     $.ajax({
                       url: "",
                       data: form_data,
@@ -780,44 +792,14 @@
             });
 
             $(".modal-init").click(function(){
-                if( this.getAttribute("data-target") == 'engrave_resim_modal' ){
-                    modals[this.getAttribute("data-target")].modal({
+                var _target = this.getAttribute("data-target");
+                if( _target == 'engrave_resim_modal' || _target == 'porselen_cropper_modal' ){
+                    modals[_target].modal({
                         backdrop:'static' // arkadaki siyahliga basinca kapatmasin, cropper da sorun oluyor
                     });
                 } else {
-                    modals[this.getAttribute("data-target")].modal('show');
+                    modals[_target].modal('show');
                 }
-            });
-
-            $(".porselen-ekle").click(function(){
-                var select_val = $("."+this.getAttribute("data")).val(),
-                    dims = cm_explode( select_val ),
-                    item_id = "POR"+Siparis.porselen_item_index,
-                    template = porselen_template.html().replace("%%SERI_CLASS%%", this.getAttribute("data") + "-item").
-                                                        replace("%%ITEM_INDEX%%", item_id ).
-                                                        replace("%%ID_INFO%%", item_id ).
-                                                        replace("%%PREV_SRC%%", this.getAttribute("prev-src")).
-                                                        replace("%%WIDTH%%", cm_to_px(parseInt(dims[0]))).
-                                                        replace("%%HEIGHT%%", cm_to_px(parseInt(dims[1])));
-                tas.append( template );
-                var elem = $("[item-index='"+item_id+"']");
-                elem.draggable({
-                    stop:function(){
-                        // duzenleme için editordeki pozisyonlarini güncelleiyor her drag da
-                        Siparis.porselenler[item_id].top = elem.css("top");
-                        Siparis.porselenler[item_id].left = elem.css("left");
-                    }
-                });
-                Siparis.urun_ekle( 'porselen', {
-                    seri: this.getAttribute("data"),
-                    ebat:select_val,
-                    item_index: item_id,
-                    rotated:false,
-                    top:0,
-                    left:0
-                });
-                if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
-                PamiraNotify("success", "Eklendi", "Porselen editöre eklendi.");  
             });
 
             // modaldan yaziyi editore ekleme btn
@@ -955,11 +937,12 @@
                switch(req){
                    // engrave resmi ekleme
                    case 'eng_cropperok':
+                      var cropped_img = croppers["engrave"].getCroppedCanvas({fillColor: '#fff'}).toDataURL('image/png'); 
                       var item_id = "ENG"+Siparis.engrave_item_index,
                           template = engrave_template.html().replace("%%ITEM_INDEX%%", item_id ).
                                                         replace("%%ITEM_INDEX%%", item_id ). // inner icin
                                                         replace("%%ID_INFO%%", item_id ).
-                                                        replace("%%IMG_SRC%%", croppers["engrave"].getCroppedCanvas({fillColor: '#fff'}).toDataURL('image/jpeg') );
+                                                        replace("%%IMG_SRC%%", cropped_img );
                       tas.append( template );
                       var elem = $($("[item-index='"+item_id+"']").get(0)),   // buyuk parent ( engrave_template )
                           img = $(elem.find("img").get(0)),   // resim
@@ -1005,7 +988,7 @@
                       // cropper resmini uçur
                       cropper_imgs["engrave"].attr("src", "");
                       // upload a basla
-                      temp_upload( Siparis.engrave_files[item_id], Siparis.engraveler[item_id].cropper_img, item_id, function(res){
+                      temp_upload( Siparis.engrave_files[item_id], cropped_img, item_id, function(res){
                         Siparis.engrave_files[item_id]["upload_ok"] = res.ok;
                       });
                       
@@ -1067,7 +1050,7 @@
 
             function finito_success_callback(){
                $("[action]").hide();
-                  html2canvas(tas.get(0), { async:false }).then(function(canvas) {
+                  html2canvas(tas.get(0), { async:false, width:tas.outerWidth() + 20 }).then(function(canvas) {
                       temp_canvas_list["finito"] = canvas;
                       // onizleme init
                       $("#modal_preview").html( canvas );
@@ -1090,6 +1073,29 @@
                     break;
 
                     case 'porselen':
+
+                        var item_id = "POR"+Siparis.porselen_item_index,
+                            tema = porselen_template.html().replace("%%ITEM_INDEX%%", item_id ),
+                            elem = $(tema);
+                        tas.append( elem );
+                        elem.draggable({
+                            stop:function(){
+                                if( Siparis.porselenler[item_id] != undefined ){
+                                    Siparis.porselenler[item_id].top = elem.css("top");
+                                    Siparis.porselenler[item_id].left = elem.css("left");
+                                }
+                            }
+                        });
+                        Siparis.porselen_files[item_id] = {"src":"Türk Bayrağı", upload_ok:true};
+                        Siparis.urun_ekle( 'porselen', {
+                            seri: this.getAttribute("data-seri"),
+                            ebat: this.getAttribute("data-ebat"),
+                            varyant: this.getAttribute("data-content"),
+                            item_index: item_id,
+                            rotated:this.getAttribute("data-rotated"),
+                            top:0,
+                            left:0
+                        });  
 
                     break;
 

@@ -18,7 +18,12 @@
          	}
 		}
 
-		public function ekle_cropped( $postdata, $filesdata ){
+		public function ekle_cropped( $postdata, $filesdata, $check = false ){
+			// siparişin önceki kayitlarini siliyoruz
+			if( $check ){
+				$this->overwrite( $postdata["parent_gid"] );
+			}
+
 			$random_fix = "TMP" . User::get_data("user_id") ."_" . Common::generate_random_string(30);
 			 // cropped upload
 			if( !CanvasUpload::action( $postdata["img_cropped"], UPLOADS_TEMP . $random_fix  . ".png")){
@@ -48,6 +53,15 @@
 			));
 		}
 
+		// porselende resmi degistirdiginde önceki resmi uçur
+		public function overwrite( $parent_gid ){
+			$query = $this->pdo->query("SELECT * FROM " . $this->dt_table . " WHERE parent_gid = ?", array($parent_gid))->results();
+			foreach( $query as $kayit ){
+				unlink( UPLOADS_TEMP . $kayit["file_name"] . "." . $kayit["ext"] );
+				$this->pdo->query("DELETE FROM " . $this->dt_table . " WHERE id = ?", array( $kayit["id"] ) );
+			}
+		}
+
 		public function sil(){
 			unlink( UPLOADS_TEMP . $this->details[0]["file_name"] . ".png"  );
 			unlink( UPLOADS_TEMP . $this->details[1]["file_name"] . "." . $this->details[1]["ext"] );
@@ -61,7 +75,16 @@
 			rename( UPLOADS_TEMP . $this->details[0]["file_name"] . ".png", $new_src . $this->details[0]["item_id"] . "_cropped.png" );
 			rename( UPLOADS_TEMP . $this->details[1]["file_name"] . "." . $this->details[1]["ext"], $new_src . $this->details[0]["item_id"] . "." . $this->details[1]["ext"] );
 			// db kayitlarini sil
-			$this->sil();
+			$this->delete_db();
+		}
+
+		public function delete_db(){
+			$this->pdo->query("DELETE FROM " . $this->dt_table . " WHERE id = ?", array( $this->details[0]["id"]));
+			$this->pdo->query("DELETE FROM " . $this->dt_table . " WHERE id = ?", array( $this->details[1]["id"]));
+		}
+
+		public function get_org_ext(){
+			return $this->details[1]["ext"];
 		}
 
 	}

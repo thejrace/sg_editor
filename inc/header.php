@@ -187,7 +187,7 @@
                     html += sip_tema.html().replace("%%V1%%", "Porselen Sipariş").
                                             replace("%%V2%%", res.data.porselen_siparisleri[k].seri ).
                                             replace("%%V3%%", res.data.porselen_siparisleri[k].adet + " adet " + res.data.porselen_siparisleri[k].ebat ).
-                                            replace("%%IMGSRC%%", "<?php echo URL_UPLOADS_PORSELEN?>" + "SGP" + res.data.porselen_siparisleri[k].gid + ".png" ).
+                                            replace("%%IMGSRC%%", "<?php echo URL_UPLOADS_PORSELEN?>" + res.data.porselen_siparisleri[k].gid + "/SGP.png" ).
                                             replace("%%ITEM_ID%%", res.data.porselen_siparisleri[k].id ).
                                             replace("%%ITEM_ID%%", res.data.porselen_siparisleri[k].id ).
                                             replace("%%ITEM_ID%%", res.data.porselen_siparisleri[k].id ).

@@ -7,7 +7,6 @@
     require CLASS_DIR . "PorselenSiparis.php";
     require CLASS_DIR . "BaslikSiparis.php";
 
-    
     if( $_POST ){
 
         $OK = 1;
@@ -18,7 +17,7 @@
         switch( Input::get("req") ){
 
             case 'ah_editor':
-                $Image = new AH_Editor_Image( Input::get("text"), Input::get("font"), Input::get("old_img"), Input::get("text_color"));
+                $Image = new AH_Editor_Image( Input::get("text"), Input::get("font"), Input::get("old_img"), Input::get("text_color"), Input::get("bg_color"));
                 if( !$Image->generate() ){
                     $OK = 0;
                     $TEXT = $Image->get_return_text();
@@ -28,6 +27,10 @@
                         "old_img"     => $Image->get_old_img()
                     );
                 }
+            break;
+
+            case 'ah_delete_img':
+                AH_Editor_Image::delete_img( Input::get("src") );
             break;
 
             case 'siparis_kaydet_old':
@@ -148,128 +151,7 @@
             <button class="btn btn-sm btn-success" id="finito"><i class="fa fa-check"></i> Tamamla</button>
          </div>
       </div>
-      
-      <div id="porselen_resim_modal" class="secim-modal modal fade" role="dialog">
-         <div class="modal-dialog">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal">&times;</button>
-                  <h4 class="modal-title">Porselen Resim Ekle</h4>
-               </div>
-              <div class="modal-body">
-                  <div class="row">
-                      
-                      <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
-                          <div class="title-part">Oval</div>
-                          <div class="prev-part"><img src="<?php echo URL_IMGS  ?>porselen_oval.png" /></div>
-                          <div class="form-part">
-                              <select class="form-control ebat-select oval-seri" data="oval">
-                               
-                              </select> 
-                          </div>
-                          <div class="nav-part">
-                              <button class="btn btn-xs btn-success porselen-ekle" data="oval-seri" prev-src="<?php echo URL_IMGS ?>porselen_oval.png"><i class="fa fa-plus"></i> Ekle</button>
-                          </div>
-                      </div>
 
-                      <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
-                          <div class="title-part">Dikörtgen</div>
-                          <div class="prev-part"><img src="<?php echo URL_IMGS  ?>porselen_dikdortgen.png" /></div>
-                          <div class="form-part">
-                              <select class="form-control ebat-select dikdortgen-seri" data="dikdortgen" >
-                              
-                              </select> 
-                          </div>
-                          <div class="nav-part">
-                              <button class="btn btn-xs btn-success porselen-ekle" data="dikdortgen-seri" prev-src="<?php echo URL_IMGS ?>porselen_dikdortgen.png" ><i class="fa fa-plus"></i> Ekle</button>
-                          </div>
-                      </div>
-
-                      <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
-                          <div class="title-part">Kare</div>
-                          <div class="prev-part"><img src="<?php echo URL_IMGS  ?>porselen_kare.png" /></div>
-                          <div class="form-part">
-                              <select class="form-control ebat-select kare-seri"  data="kare"  >
-                               
-                              </select> 
-                          </div>
-                          <div class="nav-part">
-                              <button class="btn btn-xs btn-success porselen-ekle" data="kare-seri" prev-src="<?php echo URL_IMGS ?>porselen_kare.png"><i class="fa fa-plus"></i> Ekle</button>
-                          </div>
-                      </div>
-
-                      <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
-                          <div class="title-part">Daire</div>
-                          <div class="prev-part"><img src="<?php echo URL_IMGS  ?>porselen_daire.png" /></div>
-                          <div class="form-part">
-                              <select class="form-control ebat-select daire-seri" data="daire"  >
-                               
-                              </select> 
-                          </div>
-                          <div class="nav-part">
-                              <button class="btn btn-xs btn-success porselen-ekle" data="daire-seri" prev-src="<?php echo URL_IMGS ?>porselen_daire.png"><i class="fa fa-plus"></i> Ekle</button>
-                          </div>
-                      </div>
-
-                      <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
-                          <div class="title-part">Oval Kubbe</div>
-                          <div class="prev-part"><img src="<?php echo URL_IMGS  ?>porselen_kubbe.png" /></div>
-                          <div class="form-part">
-                              <select class="form-control ebat-select kubbe-seri" data="kubbe"  >
-                                
-                              </select> 
-                          </div>
-                          <div class="nav-part">
-                              <button class="btn btn-xs btn-success porselen-ekle" data="kubbe-seri" prev-src="<?php echo URL_IMGS ?>porselen_kubbe.png"><i class="fa fa-plus"></i> Ekle</button>
-                          </div>
-                      </div>
-
-                      <!-- <div class="col-md-3 col-sm-6 col-xs-12 porselen-secim-item">
-                          <div class="title-part">Kalp</div>
-                          <div class="prev-part"><img src="<?php echo URL_IMGS  ?>porselen_kalp.png" /></div>
-                          <div class="form-part">
-                              <select class="form-control ebat-select kalp-seri" data="kalp"  >
-                                
-                              </select> 
-                          </div>
-                          <div class="nav-part">
-                              <button class="btn btn-xs btn-success porselen-ekle" data="kalp-seri" prev-src="<?php echo URL_IMGS ?>porselen_kalp.png" ><i class="fa fa-plus"></i> Ekle</button>
-                          </div>
-                      </div> -->
-
-                  </div>
-
-              </div>
-              <div class="modal-footer">
-                    <!-- <button class="btn btn-sm btn-success" ><i class="fa fa-check"></i> Tamam</button> -->
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Kapat</button>
-              </div>
-            </div>
-         </div>
-      </div>
-
-      <div id="porselen_resim_upload_modal" class="modal fade" role="dialog">
-         <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal">&times;</button>
-                  <h4 class="modal-title">Porselen Resim Ekleme</h4>
-               </div>
-               <div class="modal-body">
-                    <div class="row" style="margin-bottom:20px">
-                        <div class="col-md-12 col-xs-12 col-sm-12">
-                          <span>Resmi taşa yerleştirme işleminiz bittikten sonra <button type="button" disabled class="disabled btn btn-xs btn-success"><i class="fa fa-save"></i> Kaydet</button> butonuna basıp, işleminizi kaydedin.</span>
-                        </div>
-                    </div>
-                    <iframe def-src="porselen_baski_editor.php" src="porselen_baski_editor.php" id="portable_porselen_editor_frame"></iframe>
-               </div>
-               <div class="modal-footer">
-                   <button class="btn btn-sm btn-success" data-dismiss="modal"><i class="fa fa-check"></i> Bitir</button>
-                   <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
-               </div>
-            </div>
-         </div>
-      </div>
 
       <div id="engrave_resim_modal" class="modal fade" role="dialog">
          <div class="modal-dialog">
@@ -454,7 +336,7 @@
                    <div class="info-col">
                     <div class="ah-editor-form">
                       <div class="preview-cont">
-                        <img src="<?php echo URL_AH_EDITOR_PREVS . "editor_placeholder.png" ?>" id="editor-preview-img" alt="hege" />
+                        <img src="<?php echo URL_IMGS . "ah_editor_placeholder.png" ?>" id="editor-preview-img" alt="hege" />
                       </div>
                       <div class="form-cont">
                         <form class="form-horizontal form-label-left" action="" method="post" id="editor-form">
@@ -465,12 +347,12 @@
                                   <label class="control-label col-md-3 col-sm-3 col-xs-12">Font</label>
                                   <div class="col-md-7 col-sm-12 col-xs-12">
                                       <div class="font-select clearfix" >
-                                        <a href="" class="font-selected" id="variant_1" value="23">
-                                            <img alt="Airmole Strip" src="http://ahsaphobby.net/v2/res/img/static/font_prev/font_23.png"/>
+                                        <a href="" class="font-selected" id="variant_1" value="24">
+                                            <img alt="Script Sans" src="http://ahsaphobby.net/v2/res/img/static/font_prev/font_24.png"/>
                                         </a>
                                         <ul class="font-list">
-                                           <li class="foption selected" value="23" id="variant_1"><img alt="Airmole Strip" src="<?php echo URL_AH_EDITOR_FONT_PREVS ?>font_23.png"/></li>
-                                           <li class="foption" value="24" id="variant_1"><img alt="Script Sans" src="<?php echo URL_AH_EDITOR_FONT_PREVS ?>font_24.png"/></li>
+                                           <li class="foption" value="23" id="variant_1"><img alt="Airmole Strip" src="<?php echo URL_AH_EDITOR_FONT_PREVS ?>font_23.png"/></li>
+                                           <li class="foption  selected" value="24" id="variant_1"><img alt="Script Sans" src="<?php echo URL_AH_EDITOR_FONT_PREVS ?>font_24.png"/></li>
                                            <li class="foption" value="25" id="variant_1"><img alt="Times New Roman" src="<?php echo URL_AH_EDITOR_FONT_PREVS ?>font_25.png"/></li>
                                            <li class="foption" value="27" id="variant_1"><img alt="Harabara" src="<?php echo URL_AH_EDITOR_FONT_PREVS ?>font_27.png"/></li>
                                            <li class="foption" value="28" id="variant_1"><img alt="Corsiva" src="<?php echo URL_AH_EDITOR_FONT_PREVS ?>font_28.png"/></li>
@@ -482,14 +364,22 @@
                                   </div>
                               </div>
                               <div class="form-group">
-                                  <label class="control-label col-md-3 col-sm-3 col-xs-12">Renk</label>
+                                  <label class="control-label col-md-3 col-sm-3 col-xs-12">Yazı Rengi</label>
                                   <div class="col-md-7 col-sm-12 col-xs-12">
-                                      <select class="form-control" id="ah_text_color">
-                                        <option value="siyah">Siyah</option>
-                                        <option value="beyaz">Beyaz</option>
-                                        <option value="altin">Altın</option>
-                                        <option value="kirmizi">Kırmızı</option>
-                                    </select>
+                                      <span class="ah-text-cp" ></span>
+                                      <input type="text" class="form-control" id="ah_text_color" value="#000000" />
+                                  </div>
+                              </div>
+                              <div class="form-group">
+                                  <label class="control-label col-md-3 col-sm-3 col-xs-12">Arka Plan Rengi</label>
+                                  <div class="col-md-5 col-sm-12 col-xs-12">
+                                      <span class="ah-bg-cp"></span>
+                                      <input type="text" class="form-control" id="ah_bg_color" value="YOK" />
+                                  </div>
+                                  <div class="col-md-3 col-sm-12 col-xs-12" style="margin-top: 6px;">
+                                      <input type="checkbox"  id="ah_bg_transparent" checked />
+                                      <label for="ah_bg_transparent">Renk Yok</label>
+                                      
                                   </div>
                               </div>
                         </form>
@@ -562,7 +452,7 @@
       </div>
 
       <script type="text/template" id="yazi_template" >
-          <div class="yazi_template" item-index="%%ITEM_INDEX%%" data-renk="%%DATA_RENK%%" data-yazi="%%DATA_YAZI%%" data-font="%%DATA_FONT%%">
+          <div class="yazi_template" item-index="%%ITEM_INDEX%%" data-bg-color="%%DATA_BG_COLOR%%" data-text-color="%%DATA_TEXT_COLOR%%" data-yazi="%%DATA_YAZI%%" data-font="%%DATA_FONT%%">
                 <img src="%%PREV_SRC%%" />
                 <i action="yazi_duzenle"  tip="yazi" class="fa fa-edit"  title="Düzenle"></i>
                 <i action="sil"  tip="yazi" class="fa fa-remove" title="Kaldır"></i>
@@ -813,9 +703,10 @@
                     Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].color = AHEditor.text_color_input.value;
                     Siparis.yazilar[yazi_ekle_btn.attr("d-item-index")].prev_src = AHEditor.preview.src;
                     var elem = $("[item-index='"+yazi_ekle_btn.attr("d-item-index")+"']");
-                    elem.attr("data-renk", AHEditor.text_color_input.value);
                     elem.attr("data-yazi", AHEditor.text);
                     elem.attr("data-font", AHEditor.Font_Select.selected_font);
+                    elem.attr("data-text-color", AHEditor.text_color_input.value);
+                    elem.attr("data-bg-color", AHEditor.bg_color_input.value);
                     // editordeki resmi guncelle
                     elem.find("img").get(0).src = AHEditor.preview.src;
                     // ekleme butonunu resetle
@@ -830,7 +721,8 @@
                     template = yazi_template.html().replace("%%ITEM_INDEX%%", item_id ).
                                                     replace("%%PREV_SRC%%", AHEditor.preview.src ).
                                                     replace("%%DATA_YAZI%%", AHEditor.text ).
-                                                    replace("%%DATA_RENK%%", AHEditor.text_color_input.value ).
+                                                    replace("%%DATA_BG_COLOR%%", AHEditor.bg_color_input.value ).
+                                                    replace("%%DATA_TEXT_COLOR%%", AHEditor.text_color_input.value ).
                                                     replace("%%DATA_FONT%%", AHEditor.Font_Select.selected_font );
                 tas.append( template );
                 var elem = $("[item-index='"+item_id+"']"),
@@ -861,7 +753,8 @@
                     height:0,
                     text: AHEditor.text,
                     font: AHEditor.Font_Select.selected_font,
-                    color: AHEditor.text_color_input.value
+                    bg_color: AHEditor.bg_color_input.value,
+                    text_color: AHEditor.text_color_input.value
                  });
                  // ah editoru resetle
                  AHEditor.reset();
@@ -878,8 +771,7 @@
                     break;
 
                     case 'sil':
-                        parent_node.remove();
-                        delete siparis_data_obj[parent_node.attr("item-index")];
+                        
                         // engrave resmini de sil
                         if( this.getAttribute("tip") == "engrave" ){
                             delete_temp_file( parent_node.attr("item-index") );
@@ -889,6 +781,12 @@
                             delete_temp_file( parent_node.attr("item-index") );
                             delete Siparis.porselen_files[parent_node.attr("item-index")];
                         }
+                        // yazinin editor resminide siliyoruz
+                        if( this.getAttribute("tip") == "yazi" ){
+                            AHEditor.delete_img( siparis_data_obj[parent_node.attr("item-index")].prev_src );
+                        }
+                        delete siparis_data_obj[parent_node.attr("item-index")];
+                        parent_node.remove();
                     break;
 
                     // sadece porselende var
@@ -901,8 +799,11 @@
                         // yaziyi duzenleme
                         AHEditor.text = parent_node.attr("data-yazi");
                         AHEditor.Font_Select.select( $("[value='"+parent_node.attr("data-font")+"']").get(0) );
-                        AHEditor.text_color_input.value = parent_node.attr("data-renk");
+                        AHEditor.text_color_input.value = parent_node.attr("data-text-color");
+                        AHEditor.bg_color_input.value = parent_node.attr("data-bg-color");
                         AHEditor.editor_input.value = parent_node.attr("data-yazi");
+                        AHEditor.refresh_cps();
+
                         // bastaki url i sil
                         AHEditor.old_img = parent_node.find("img").get(0).src.substring( AHEditor.url_prefix.length, AHEditor.url_prefix.length+36 );
                         AHEditor.update_preview();
@@ -1197,6 +1098,12 @@
             // cropper modal file input
             $(".upload_img").change(function(ev){
                  upload_img( this.getAttribute("item-type"), this );
+            });
+
+            // yazi modali resetliyoruz kapandiginda
+            modals["yazi_ekleme_modal"].on('hidden.bs.modal', function () {
+                AHEditor.reset();
+                yazi_ekle_btn.attr("duzenleme", 0).attr("d-item-index", -1);
             });
 
             function upload_img( type, data ){
@@ -1525,11 +1432,39 @@
                 old_img:null,
                 preview:null,
                 url_prefix: "<?php echo URL_AH_EDITOR_PREVS ?>",
+                color_pickers: null,
+                cp_settings: {
+
+                },
+                ah_bg_transparent_cb:null,
                 init: function(){
                   this.editor_input     = $AH('editor-text');
                   this.preview      = $AH('editor-preview-img');
                   this.text_color_input = $AH('ah_text_color');
+                  this.bg_color_input = $AH("ah_bg_color");
                   this.Font_Select.init();
+                  this.ah_bg_transparent_cb = $("#ah_bg_transparent");
+
+                  $(this.bg_color_input).colorpicker(this.cp_settings).on('colorpickerChange', debounce(function (e) {
+                      AHEditor.request_preview();
+                      AHEditor.ah_bg_transparent_cb.get(0).checked = false;
+                  }, 500, false) );
+
+                  $(this.text_color_input).colorpicker(this.cp_settings).on('colorpickerChange', debounce(function (e) {
+                      AHEditor.request_preview();
+                  }, 500, false) );
+
+                  this.bg_color_input.value = "YOK";
+
+                  this.ah_bg_transparent_cb.change(function(){
+                      if( this.checked ){
+                          AHEditor.bg_color_input.value = "YOK";
+                      } else {
+                          AHEditor.bg_color_input.value = "#FFFFFF";
+                      }
+                      AHEditor.request_preview();
+                  });
+
                 },
                 is_empty: function(){
                   return trim( get_val( this.editor_input ) ).length == 0;
@@ -1544,9 +1479,11 @@
                       text:       this.text,
                       old_img:    this.old_img,
                       font:       this.Font_Select.selected_font,
-                      text_color: this.text_color_input.value
+                      text_color: this.text_color_input.value,
+                      bg_color:   this.bg_color_input.value
                     }),
                     function( r ){
+                      //console.log(r);
                       AHEditor.old_img                    = r.data.old_img;
                       AHEditor.preview.src                = r.data.img_src;
                       yazi_ekle_btn.get(0).disabled = false;
@@ -1564,11 +1501,32 @@
                   this.text = get_val( this.editor_input );
                   this.request_preview();
                 },
+                refresh_cps: function(){
+                    $(this.text_color_input).trigger("change");
+                    // eger arka plan rengi yok degilse, colorpicker i resetliyoruz renge göre
+                    if( this.bg_color_input.value != "YOK" ){
+                        // duzenleme
+                        $(this.bg_color_input).trigger("change");
+                        this.ah_bg_transparent_cb.get(0).checked = false;
+                    } else {
+                        // init olayı 
+                        this.ah_bg_transparent_cb.get(0).checked = true;
+                    }       
+                },
                 reset: function(){
                     this.text = "Sucuoglu";
                     this.editor_input.value = "";
                     this.old_img = null;
-                    //this.request_preview();
+                    this.preview.src = "<?php echo URL_IMGS . "ah_editor_placeholder.png" ?>";
+                    this.text_color_input.value = "#000000";
+                    this.bg_color_input.value = "YOK";
+                    this.refresh_cps();
+                },
+                // editorden yaziyi sildiginde, sunucudan da sil
+                delete_img: function( src ){
+                    REQ.ACTION("", { req:"ah_delete_img", src:src }, function(res){
+                        //console.log(res);
+                    });
                 },
                 Font_Select: {
                   init: function(){
@@ -1625,6 +1583,10 @@
               });
 
               add_event( AHEditor.text_color_input, "change", function(e){
+                AHEditor.update_preview();
+              });
+
+              add_event( AHEditor.bg_color_input, "change", function(e){
                 AHEditor.update_preview();
               });
 

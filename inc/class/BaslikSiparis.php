@@ -77,7 +77,7 @@
         	// db den sil
         	$this->pdo->query("DELETE FROM " . $this->dt_table ." WHERE id = ?", array($this->details["id"])); 
         	// porselen siparisleri sil
-        	$this->pdo->query("DELETE FROM " . DBT_PORSELEN_SIPARISLERI ." WHERE parent_gid = ?", array($this->details["gid"]));
+        	//$this->pdo->query("DELETE FROM " . DBT_PORSELEN_SIPARISLERI ." WHERE parent_gid = ?", array($this->details["gid"]));
         	// tum klasorü içindekilerle sil
         	array_map('unlink', glob(UPLOADS_DIR_BASLIK . $this->details["gid"]."/*.*"));
         	rmdir(UPLOADS_DIR_BASLIK . $this->details["gid"]);

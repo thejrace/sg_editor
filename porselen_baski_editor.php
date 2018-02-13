@@ -2,6 +2,7 @@
     require 'inc/defs.php';
     require CLASS_DIR . "CanvasUpload.php";
     require CLASS_DIR . "ImageUpload.php";
+    require CLASS_DIR . "TempUpload.php";  
     require CLASS_DIR . "PorselenSiparis.php";  
 
     if( $_POST ){
@@ -80,6 +81,13 @@
     // baslik editorden resim ekleme
     $PORTABLE_FLAG = isset($_GET["portable"]);
 
+    if( !$DUZENLEME_FLAG ){
+        $GID = User::get_data("user_id") ."_" . Common::generate_random_string(30);
+    } else {
+        $GID = "";
+    }
+    
+
    ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -151,7 +159,6 @@
            
            <button class="btn btn-sm btn-primary ayar-btn" ayar="resimupload"><i class="fa fa-upload"></i> Resim Yükle & Düzenle</button>
            <button class="btn btn-sm btn-default ayar-btn" ayar="resimreset"><i class="fa fa-refresh"></i> Resim Reset</button>
-           <button class="btn btn-sm btn-default ayar-btn portable-hide" ayar="taslrotate"><i class="fa fa-rotate-left" ></i> </button>
            <button class="btn btn-sm btn-default ayar-btn portable-hide" ayar="tasrrotate"><i class="fa fa-rotate-right"></i> </button>
          </div>
       </div>
@@ -278,18 +285,23 @@
                    $("[seri='"+crop_container.attr("activeclass")+"']").removeClass("btn-success").addClass("btn-danger");
                    // yeni serinin butonunu yesil yap
                     _this.removeClass("btn-danger").addClass("btn-success");
+                   var old_seri = aktif_seri;
                    // onizleme container i guncelle
                    crop_container.removeClass(crop_container.attr("activeclass")).addClass(_this.attr("seri")).attr("activeclass", _this.attr("seri"));
                    aktif_seri = _this.attr("seri");
+                   crop_container.removeClass(old_seri+"-porselen-rotate");
+                   // aciyi her turlu sifirliyoruz
+                   porselen_aci = 0;
+                   tas_donuk = false;
                    // taş döndürme her seri de yapilmayacak, onu kontrol et
                    if( aktif_seri == "kare" || aktif_seri == "daire" || aktif_seri == "kubbe" ){
-                      tasrleft.get(0).disabled = true;
                       tasrright.get(0).disabled = true;
                    } else {
-                      tasrleft.get(0).disabled = false;
                       tasrright.get(0).disabled = false;
                    }
+                   aktif_ebat = ebat_options[aktif_seri][0];
                }
+
 
                // crop islemi onaylandiktan sonra taşa uygula
                function crop_to_tas(){
@@ -317,14 +329,14 @@
                       //console.log(js_data);
                       kesim_baslat();
                       // cropper resim init
-                      cropper_img.attr("src", resim_url_prefix+"SGO"+res.data.gid+"."+res.data.orjinal_resim_ext);
+                      cropper_img.attr("src", resim_url_prefix+res.data.gid+"/PORX."+res.data.orjinal_resim_ext);
                       // modal larda garip hareketler yapiyor cropper o yuzden, modal acildiktan sonra init ediyoruz
                       cropper_modal.on('shown.bs.modal', function () {
                           if( !duzenleme && !portable ) return; // duzenleme sonrasi, yeni sipariş falan verirse bu eventi calistirmicaz
                           if( cropper == undefined ) cropper = new Cropper( cropper_img.get(0), extend( cropper_init_data, { data:js_data.cropper_data.data } ) );
                       });
                       // editor resim init
-                      uploaded_img.attr("src", resim_url_prefix+"SGC"+res.data.gid+".png");
+                      uploaded_img.attr("src", resim_url_prefix+res.data.gid+"/PORX_cropped.png");
                       // editor resim boyutlandirma
                       uploaded_img.css({ height:js_data.img_data.height, width:js_data.img_data.width });
                       // resim reset verileri 
@@ -344,6 +356,7 @@
                       seri_sec($("[seri='"+res.data.seri+"']"));
                       // edit datayi init et
                       edit_data = js_data;
+                      siparis_gid = res.data.gid;
                       // siparis form doldur
                       crop_modal_adet_input.val(res.data.adet);
                       // portable da $_GET ile aliyoruz ebatı
@@ -356,7 +369,8 @@
                   });
                }
   
-               var duzenleme = <?php echo (int)$DUZENLEME_FLAG ?>,
+               var siparis_gid = "<?php echo $GID ?>",
+                   duzenleme = <?php echo (int)$DUZENLEME_FLAG ?>,
                    portable  = <?php echo (int)$PORTABLE_FLAG ?>,
                    // portable da editorden yeni mi eklenecek, yoksa eklenmiş olan mı düzeltilecek bayragi
                    portable_edit_flag = false,
@@ -415,7 +429,6 @@
                    // secili ebat, her form init te ilk options u seçmesin diye
                    aktif_ebat = "8x10",
                    // tas dondurme butonlari
-                   tasrleft =  $('[ayar="taslrotate"]'),
                    tasrright =  $('[ayar="tasrrotate"]'),
                    // tekli siparis upload icin kullanilacak formdata objesi
                    siparis_form_data = null,
@@ -513,17 +526,47 @@
                          temp_file = file;
                      } 
                });
-         
+
+               function temp_upload( temp_file, temp_canvas, item_id, cb ){
+                  if( !window.FormData ){
+                      alert("Sitemiz kullandığınız tarayıcı versiyonunu desteklemiyor. Lütfen tarayıcınızı güncelleyin.");
+                      return false;
+                  }
+                  //console.log("Temp upload başladi");
+                  var form_data = new FormData();
+                  form_data.append("req", "temp_upload");
+                  form_data.append("img", temp_file );
+                  form_data.append("img_cropped", temp_canvas );
+                  form_data.append("parent_gid", siparis_gid );
+                  form_data.append("item_id", item_id );
+                  $.ajax({
+                      url: "inc/global_ajax.php",
+                      data: form_data,
+                      processData: false,
+                      contentType: false,
+                      type: 'POST',
+                      success: function( obj ){
+                          var res = JSON.parse(obj);
+                          if( typeof cb == 'function' ) cb( res );
+                          //console.log(res);
+                          //console.log("Temp upload tamamlandı.");
+                      }
+                  });
+               }
+
                // croppper modal daki ayar butonlari
                $(".cropper-btn").click(function(){
                    var req = this.getAttribute("ayar");
                    switch(req){
                        case 'cropperok':
-                         uploaded_img.attr("src", cropper.getCroppedCanvas({fillColor: '#fff'}).toDataURL('image/jpeg') );
+                         var canvas = cropper.getCroppedCanvas({fillColor: '#fff'}).toDataURL('image/png');
+                         uploaded_img.attr("src", canvas );
                          cropper_modal.modal('hide');
                          // kesim ayarlarini taşa uygula
                          crop_to_tas();
                          kesim_baslat();
+                         // resmi upload et, (server-side da eski resmi siliyor)
+                         temp_upload( temp_file, canvas, "PORX", false);
                        break;
          
                        case 'cropperreset':
@@ -616,8 +659,9 @@
                             data: cropper.getData()
                           }
                       });
-                      form_data.append("cropped_img", cropper.getCroppedCanvas({fillColor: '#fff'}).toDataURL('image/png'));
+                      //form_data.append("cropped_img", cropper.getCroppedCanvas({fillColor: '#fff'}).toDataURL('image/png'));
                   } 
+                  form_data.append("gid", siparis_gid);
                   form_data.append("ebat", crop_modal_ebat_select.val());
                   form_data.append("adet", adet_val);
                   form_data.append("notlar", crop_modal_not_input.val());
@@ -626,7 +670,7 @@
                   form_data.append("telefon", telefon_val);
                   form_data.append("seri", aktif_seri);
                   form_data.append("preview", temp_canvas.toDataURL("image/png") );
-                  form_data.append("resim", temp_file );
+                  //form_data.append("resim", temp_file );
                   form_data.append("edit_data", JSON.stringify(edit_data, null, 2));
                   if( duzenleme || portable_edit_flag ){
                       form_data.append("req", "porselen_siparis_duzenle");
@@ -695,26 +739,17 @@
                           }
                      break;
 
-                     case 'taslrotate':
-                          porselen_aci -= 90;
-                          if( porselen_aci == -180 || porselen_aci == 0 ){
-                              crop_container.removeClass("porselen-rotate");
-                              porselen_aci = 0;
-                              tas_donuk = false;
-                          } else {
-                              crop_container.addClass("porselen-rotate");
-                              tas_donuk = true;
-                          }
-                     break;
 
                      case 'tasrrotate':
                           porselen_aci += 90;
                           if( porselen_aci == 180 || porselen_aci == 0 ){
-                              crop_container.removeClass("porselen-rotate");
+                              crop_container.removeClass(aktif_seri+"-porselen-rotate");
+                              crop_container.addClass(aktif_seri);
                               porselen_aci = 0;
                               tas_donuk = false;
                           } else {
-                              crop_container.addClass("porselen-rotate");
+                              crop_container.addClass(aktif_seri+"-porselen-rotate");
+                              crop_container.removeClass(aktif_seri);
                               tas_donuk = true;
                           }
                      break;

@@ -59,8 +59,10 @@
                 require CLASS_DIR . "TempUpload.php";
 
                 $TempUpload = new TempUpload();
-                if( !$TempUpload->ekle_cropped( $_POST, $_FILES ) ){
-                    $OK = 0;
+                if( Input::get("item_id") == "PORX" ){
+                    if( !$TempUpload->ekle_cropped( $_POST, $_FILES, true ) ) $OK = 0;
+                } else {
+                    if( !$TempUpload->ekle_cropped( $_POST, $_FILES ) ) $OK = 0;
                 }
                 $TEXT = $TempUpload->get_return_text();
 

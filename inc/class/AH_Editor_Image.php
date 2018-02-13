@@ -3,11 +3,11 @@
 	// 23.01.16 
 	class AH_Editor_Image {
 		private $pdo, $text, $img_name, $img_src, $img_url, $letter_count, $font, $ext = '.png',
-				$width, $height, $font_size, $x, $y, $text_color,
+				$width, $height, $font_size, $x, $y, $text_color = array(), $bg_color = array(),
 				$font_folder, $src_folder,
 				$return_text,
 				$img_box = array();
-		public function __construct( $text, $font, $prev_img, $textcolor ){
+		public function __construct( $text, $font, $prev_img, $textcolor, $bgcolor ){
 			$this->text = $text;
 			// default, yazinin uzunluguna gore scale edicem
 			$this->font_size = 50;
@@ -17,6 +17,7 @@
 			$this->src_folder  =  AH_EDITOR_IMGS_DIR;
 			$this->font = AH_EDITOR_FONTS_DIR . $font . ".ttf";
 			$this->text_color = $textcolor;
+			$this->bg_color = $bgcolor;
 			if( $prev_img != "default" ) $this->delete_prev_image( $prev_img );
 		}
 		// her keyup da bir onceki preview resmin adini js den aliyorum ve
@@ -70,7 +71,7 @@
 				$this->width = $max_width;
 				// her bir karakterin tuttugu width kadar olacak font (deneysel ama tutuyor)
 				if( $this->letter_count == 0 ) $this->letter_count = 34;
-				$this->font_size = ( $max_width + 5 ) / $this->letter_count;
+				$this->font_size = ( $max_width + 100 ) / $this->letter_count;
 				// fontu size degistirdigimiz icin ortalama hesaplamak icim
 				// yazinin koordinatlarini tekrar aliyoruz
 				$this->img_box = imagettfbbox( $this->font_size, 0, $this->font, $this->text );
@@ -94,37 +95,25 @@
 			// resim objesi
 			$img = imagecreatetruecolor($this->width, $this->height);
 			imagesavealpha( $img, true );
-
-			// beyaz
-			$bg_color = imagecolorallocatealpha( $img, 255, 255, 255, 127);
-			// siyah
-			switch( $this->text_color ){
-				case 'siyah':
-					$text_color = imagecolorallocate( $img, 0,0,0);
-				break;
-
-				case 'beyaz':
-					$text_color = imagecolorallocate( $img, 255,255,255);
-				break;
-
-				case 'altin':
-					$text_color = imagecolorallocate( $img, 255,189, 91);
-				break;
-
-				case 'kirmizi':
-					$text_color = imagecolorallocate( $img, 255,0, 0);
-				break;
-
-				default:
-					$text_color = imagecolorallocate( $img, 0,0,0);
-				break;
+			if( $this->bg_color != "YOK" ){
+				$bg_color = imagecolorallocatealpha( $img, hexdec(substr($this->bg_color, 1, 2)), hexdec(substr($this->bg_color, 3, 2)), hexdec(substr($this->bg_color, 5, 2)), 0);
+			} else {
+				$bg_color = imagecolorallocatealpha( $img, 255, 255, 255, 127);
 			}
+			$text_color = imagecolorallocate( $img, hexdec(substr($this->text_color, 1, 2)), hexdec(substr($this->text_color, 3, 2)), hexdec(substr($this->text_color, 5, 2)));
 			imagefill( $img, 0, 0, $bg_color );
 			// resme yaziyi yaz
 			imagettftext( $img, $this->font_size, 0, $this->x, $this->y, $text_color, $this->font, $this->text);
 			// patlat beybe
 			imagepng( $img, $this->img_src );
 			return true;
+		}
+		public static function delete_img( $src ){
+			$name = substr( $src, strlen(URL_AH_EDITOR_PREVS) );
+			unlink( AH_EDITOR_IMGS_DIR . $name );
+		}
+		public function get_bg_color(){
+			return $this->bg_color;
 		}
 		public function get_old_img(){
 			return $this->img_name . $this->ext;

@@ -18,7 +18,7 @@
     </div>
 
 
-    <iframe src="mezar_tasi_editor.php" id="baslik_editor_frame"></iframe>
+    <iframe src="mezar_tasi_editor_test.php" id="baslik_editor_frame"></iframe>
 
   </div>
 

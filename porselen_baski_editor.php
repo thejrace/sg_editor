@@ -450,6 +450,9 @@
                          temp_crop_data = {w:230, h:ar_height};
                        }
                    },
+                   siparis_yukle_btn = $("#siparis_yukle"),
+                   finito_cb_notified = false,
+                   finito_upload_check = null,
                    // cropper le kesme islemi yapildiginda, taşa uygulanacak hareketleri tuttugumuz degisken
                    // crop(e) metodundan alinan veriler
                    temp_crop_data = {};
@@ -532,7 +535,7 @@
                       alert("Sitemiz kullandığınız tarayıcı versiyonunu desteklemiyor. Lütfen tarayıcınızı güncelleyin.");
                       return false;
                   }
-                  //console.log("Temp upload başladi");
+                  console.log("Temp upload başladi");
                   var form_data = new FormData();
                   form_data.append("req", "temp_upload");
                   form_data.append("img", temp_file );
@@ -549,7 +552,7 @@
                           var res = JSON.parse(obj);
                           if( typeof cb == 'function' ) cb( res );
                           //console.log(res);
-                          //console.log("Temp upload tamamlandı.");
+                          console.log("Temp upload tamamlandı.");
                       }
                   });
                }
@@ -566,7 +569,9 @@
                          crop_to_tas();
                          kesim_baslat();
                          // resmi upload et, (server-side da eski resmi siliyor)
-                         temp_upload( temp_file, canvas, "PORX", false);
+                         temp_upload( temp_file, canvas, "PORX", function(res){
+                            temp_file["upload_ok"] = res.ok;
+                         });
                        break;
          
                        case 'cropperreset':
@@ -587,6 +592,27 @@
                crop_modal_ebat_select.change(function(){
                   aktif_ebat = this.value;
                });
+
+               function finito_upload_cb( init ){
+                    if( temp_file.upload_ok == undefined || !temp_file.upload_ok ){
+                        siparis_yukle_btn.get(0).disabled = true;
+                        if( !finito_cb_notified ){
+                            PamiraNotify("warning", "Lütfen bekleyin..", "Resimler siteye yükleniyor. Yükleme bittikten sonra siparişinizi gönderebilirsiniz.", false );
+                            finito_cb_notified = true;
+                            lockui();
+                            $(document).scrollTop();
+                        }
+                        return false;
+                    }
+
+                    if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                   
+                    clearInterval(finito_upload_check);
+                    siparis_yukle_btn.get(0).disabled = false;
+                    // sadece interval de callback calistircaz
+                    if( init == undefined ) finito_success_callback();
+                    return true;
+                }
               
                $("#siparis_yukle").click(function(){
                   if( !window.FormData ){
@@ -687,9 +713,13 @@
                       success: function( res ){
                           // contenttype false oldugu icin, parse ediyoruz json responsu manuel olarak
                           var obj = JSON.parse(res);
-                          //console.log(obj);
+                          console.log(obj);
                           if( obj.ok ){
                               PamiraNotify("success", "İşlem Tamam", obj.text);
+
+                              setTimeout(function(){ location.reload(); }, 1000 );
+                              return;
+
                               _this.disabled = false;
                               // sipariş modalini kapat
                               crop_modal.modal("hide");
@@ -716,6 +746,48 @@
                       }
                   });
                });
+    
+               function lockui(){
+                    var btns = $(document).find("button");
+                    for( var k = 0; k < btns.length; k++ ){
+                        btns[k].disabled = true;
+                    }
+               }
+
+               function finito_success_callback(){
+
+                    // editor de resim var mi kontrol et
+                    if( !duzenleme && !portable && temp_file == undefined ){
+                        PamiraNotify("error", "Hata", "Editöre resim yüklenmemiş. \"Resim Yükle & Düzenle\" butonunu kullanarak resim yükleyin.");
+                        return false;
+                    }
+
+                    kesim_bitir();
+
+                    if( !finito_upload_cb( true ) ){
+                        finito_upload_check = setInterval( finito_upload_cb , 1000 );
+                        return;
+                    }
+
+                    
+                    var dimensions_data;
+                    // taşı çevirmişse, w ile h yi swap ediyoruz keserken
+                    if( tas_donuk ){
+                        dimensions_data = { width:seri_dimensions[aktif_seri][1] + 20, height:seri_dimensions[aktif_seri][0] };
+                    } else {
+                        dimensions_data = { width:seri_dimensions[aktif_seri][0] + 20, height:seri_dimensions[aktif_seri][1]}
+                    }
+                    html2canvas(crop_container.get(0), extend( { async:false }, dimensions_data )).then(function(canvas) {
+                        temp_canvas = canvas;
+                        // onizleme init
+                        crop_modal_preview.html( canvas );
+                        // select i seriye göre ayarla
+                        //console.log(aktif_ebat);
+                        add_options( crop_modal_ebat_select.get(0), true, ebat_options[aktif_seri], aktif_ebat, true );
+                        crop_modal.modal("show");
+                    });
+
+               }
 
                // ana ekran ayar butonlari
                $(".ayar-btn").click(function(){
@@ -770,28 +842,7 @@
                      break;
          
                      case 'indir':
-                        // editor de resim var mi kontrol et
-                        if( !duzenleme && !portable && temp_file == undefined ){
-                            PamiraNotify("error", "Hata", "Editöre resim yüklenmemiş. \"Resim Yükle & Düzenle\" butonunu kullanarak resim yükleyin.");
-                            return false;
-                        }
-                        kesim_bitir();
-                        var dimensions_data;
-                        // taşı çevirmişse, w ile h yi swap ediyoruz keserken
-                        if( tas_donuk ){
-                            dimensions_data = { width:seri_dimensions[aktif_seri][1] + 20, height:seri_dimensions[aktif_seri][0] };
-                        } else {
-                            dimensions_data = { width:seri_dimensions[aktif_seri][0] + 20, height:seri_dimensions[aktif_seri][1]}
-                        }
-                        html2canvas(crop_container.get(0), extend( { async:false }, dimensions_data )).then(function(canvas) {
-                            temp_canvas = canvas;
-                            // onizleme init
-                            crop_modal_preview.html( canvas );
-                            // select i seriye göre ayarla
-                            //console.log(aktif_ebat);
-                            add_options( crop_modal_ebat_select.get(0), true, ebat_options[aktif_seri], aktif_ebat, true );
-                            crop_modal.modal("show");
-                        });
+                         finito_success_callback();
                      break;
                    }
                });

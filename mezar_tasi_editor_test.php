@@ -607,6 +607,9 @@
                         PamiraNotify("error", "Hata", "Lütfen geçerli bir eposta adresi giriniz.");  
                         return;
                     }
+                    if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                    PamiraNotify("info", "Lütfen bekleyin..", "Siparişiniz gönderiliyor..", false );
+
                     siparis_yukle_btn.get(0).disabled = true;
                     var form_data = new FormData();
                     form_data.append("req", "siparis_kaydet");
@@ -640,22 +643,24 @@
                 },
                 finito_upload_cb: function( init ){
                     for( var item_index in Siparis.porselenler ){
-                        if( !Siparis.porselen_files[item_index].upload_ok ){
+                        if( Siparis.porselen_files[item_index].upload_ok == undefined || !Siparis.porselen_files[item_index].upload_ok ){
                             siparis_yukle_btn.get(0).disabled = true;
                             if( !Siparis.finito_cb_notified ){
                                 PamiraNotify("warning", "Lütfen bekleyin..", "Resimler siteye yükleniyor. Yükleme bittikten sonra siparişinizi gönderebilirsiniz.", false );
                                 Siparis.finito_cb_notified = true;
+                                lockui();
                             }
                             return false;
                         }
                     }
                     for( var item_index in Siparis.engraveler ){
-                        if( !Siparis.engrave_files[item_index].upload_ok ){
+                        if( Siparis.engrave_files[item_index].upload_ok == undefined || !Siparis.engrave_files[item_index].upload_ok ){
                             siparis_yukle_btn.get(0).disabled = true;
 
                             if( !Siparis.finito_cb_notified ){
                                 PamiraNotify("warning", "Lütfen bekleyin..", "Resimler siteye yükleniyor. Yükleme bittikten sonra siparişinizi gönderebilirsiniz.", false );
                                 Siparis.finito_cb_notified = true;
+                                lockui();
                             }
                             return false;
                         }
@@ -997,6 +1002,8 @@
                             top:0,
                             left:0
                         });  
+                        if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
+                        PamiraNotify("success", "Eklendi", "Porselen editöre eklendi.");  
 
                     break;
 
@@ -1138,7 +1145,7 @@
                     alert("Sitemiz kullandığınız tarayıcı versiyonunu desteklemiyor. Lütfen tarayıcınızı güncelleyin.");
                     return false;
                 }
-                //console.log("Temp upload başladi");
+                console.log("Temp upload başladi");
                 var form_data = new FormData();
                 form_data.append("req", "temp_upload");
                 form_data.append("img", temp_file );
@@ -1155,7 +1162,7 @@
                         var res = JSON.parse(obj);
                         if( typeof cb == 'function' ) cb( res );
                         //console.log(res);
-                        ///console.log("Temp upload tamamlandı.");
+                        console.log("Temp upload tamamlandı.");
                     }
                 });
             }
@@ -1167,6 +1174,13 @@
                     //console.log("Delete temp file ok");
                 });
             }
+
+            function lockui(){
+                  var btns = $(document).find("button");
+                  for( var k = 0; k < btns.length; k++ ){
+                      btns[k].disabled = true;
+                  }
+             }
          
             // cm to 5px cevir ( 1cm = 10px )
             function cm_to_px( val ){

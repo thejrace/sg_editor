@@ -687,7 +687,7 @@
                       success: function( res ){
                           // contenttype false oldugu icin, parse ediyoruz json responsu manuel olarak
                           var obj = JSON.parse(res);
-                          console.log(obj);
+                          //console.log(obj);
                           if( obj.ok ){
                               PamiraNotify("success", "İşlem Tamam", obj.text);
                               _this.disabled = false;
@@ -788,7 +788,7 @@
                             // onizleme init
                             crop_modal_preview.html( canvas );
                             // select i seriye göre ayarla
-                            console.log(aktif_ebat);
+                            //console.log(aktif_ebat);
                             add_options( crop_modal_ebat_select.get(0), true, ebat_options[aktif_seri], aktif_ebat, true );
                             crop_modal.modal("show");
                         });

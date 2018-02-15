@@ -22,7 +22,7 @@
 					 <b>Eposta:</b>".$postdata["eposta"]."<br>
 					 <b>Mesaj:</b>".$postdata["mesaj"]."<br>";
 
-			//if( !EpostaBildirim::yap(array("email" => "ahmetkanbur@gmail.com", "isim" => "Amo"), "SG İletişim Form Test", $html ) ) return false;
+			EpostaBildirim::yap( "", array("subject" => "Siteden Mesaj Var", "body" => $html ));
 			$this->return_text = "Mesajınız alındı. Teşekkürler.";
 			return true;
 

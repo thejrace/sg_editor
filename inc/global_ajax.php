@@ -1,7 +1,9 @@
 <?php
 	
 	require 'defs.php';  
-	
+
+
+
 	if( $_POST ){
 
         $OK = 1;
@@ -32,6 +34,10 @@
 
             case 'siparisleri_onayla':
 
+                require CLASS_DIR_PHPMAIL . 'Exception.php';
+                require CLASS_DIR_PHPMAIL . 'PHPMailer.php';
+                require CLASS_DIR_PHPMAIL . 'SMTP.php';
+                require CLASS_DIR . 'EpostaBildirim.php';
                 require CLASS_DIR . "PorselenSiparis.php";
                 require CLASS_DIR . "BaslikSiparis.php";
                 $TEXT = User::siparisleri_onayla();
@@ -40,9 +46,10 @@
 
             case 'iletisim_formu':
 
-                //require CLASS_DIR . 'phpmailer.php';
-                //require CLASS_DIR . 'SMTP.php';
-                //require CLASS_DIR . 'EpostaBildirim.php';
+                require CLASS_DIR_PHPMAIL . 'Exception.php';
+                require CLASS_DIR_PHPMAIL . 'PHPMailer.php';
+                require CLASS_DIR_PHPMAIL . 'SMTP.php';
+                require CLASS_DIR . 'EpostaBildirim.php';
                 require CLASS_DIR . 'IletisimForm.php';
                 
                 $Form = new IletisimForm;

@@ -155,15 +155,53 @@
 		}
 
 		public static function siparisleri_onayla(){
+
+			$html = '<table style="font-family:Trebuchet MS">
+							<tr>
+								<td style="text-align:center; font-size:20px">SucuoğluGranit Sipariş Bildirimi</td>
+							</tr>';
+
+
+
 			$data = self::siparisler_download();
 			foreach( $data["baslik_siparisleri"] as $sip ){
 				$Siparis = new BaslikSiparis( $sip["id"] );
 				$Siparis->durum_degistir( Common::$SIPARIS_ONAYLANDI );
+
+				$html .= '<tr>
+							<td style="color:red">Başlık Sipariş</td>
+						</tr>
+						<tr>
+							<td valign="middle"><img src="'.URL_UPLOADS_BASLIK.$Siparis->get_details("gid").'/PREV.png" width="100" height="100" /></td>
+						</tr>
+						<tr>
+							<td width="100" style="font-size:13px">Müşteri: '.User::get_data("user_email").'</td>
+							<td width="100" style="font-size:13px"><a href="'.URL_ADMIN_SIPARISLER.'">İncele</a></td>
+						</tr>';
+
 			}
 			foreach( $data["porselen_siparisleri"] as $sip ){
 				$Siparis = new PorselenSiparis( $sip["id"] );
-				$Siparis->durum_degistir( COmmon::$SIPARIS_ONAYLANDI );
+				$Siparis->durum_degistir( Common::$SIPARIS_ONAYLANDI );
+
+				$html .= '<tr>
+							<td style="color:red">Porselen Sipariş</td>
+						</tr>
+						<tr>
+							<td valign="middle"><img src="'.URL_UPLOADS_PORSELEN.$Siparis->get_details("gid").'/SGP.png" width="100" height="100" /></td>
+						</tr>
+						<tr>
+							<td width="100" style="font-size:13px">Müşteri: '.User::get_data("user_email").'</td>
+							<td width="100" style="font-size:13px"><a href="'.URL_ADMIN_SIPARISLER.'">İncele</a></td>
+						</tr>';
+
 			}
+
+			$html .= "</table>";
+
+			EpostaBildirim::yap( "", array("subject" => "Sipariş Bildirimi", "body" => $html ));
+
+
 			return "Siparişler onaylandı.";
 		}
 

@@ -34,7 +34,7 @@
 
       require CLASS_DIR . "PorselenSiparis.php";
       $PorselenSiparis = new PorselenSiparis(Input::get("item_id"));
-      if( !$PorselenSiparis->is_ok() || $PorselenSiparis->get_details("parent_gid") != "" ) die("Error obarey");
+      if( !$PorselenSiparis->is_ok() ) die("Error obarey");
 
       require 'inc/header.php';
       require 'inc/body_header.php';
@@ -53,7 +53,7 @@
               <div class="row mt"> 
 
                   <div class="col-md-4 col-xs-12 col-sm-12 baslik-prev">
-                      <img src="<?php echo URL_UPLOADS_PORSELEN . "SGP" . $PorselenSiparis->get_details("gid") ?>.png" />
+                      <img src="<?php echo URL_UPLOADS_PORSELEN . $PorselenSiparis->get_details("gid") . "/SGP" ?>.png" />
                   </div>
                   <div class="col-md-6 col-xs-12 col-sm-12">
                       <ul>
@@ -65,7 +65,7 @@
                           <li>Ebat: <?php echo $PorselenSiparis->get_details("ebat") ?></li>
                           <li>Adet: <?php echo $PorselenSiparis->get_details("adet") ?></li>
                           <li>Notlar: <?php echo $PorselenSiparis->get_details("notlar") ?></li>
-                          <li><button type="button" class="btn btn-xs btn-info" org-src="<?php echo URL_UPLOADS_PORSELEN . "SGO" . $PorselenSiparis->get_details("gid") . "." . $PorselenSiparis->get_details("orjinal_resim_ext") ?>"><i class="fa fa-save"></i> Resmi İndir</button></li>
+                          <li><button type="button" class="btn btn-xs btn-info" org-src="<?php echo URL_UPLOADS_PORSELEN . $PorselenSiparis->get_details("gid") . "/PORX." . $PorselenSiparis->get_details("orjinal_resim_ext") ?>"><i class="fa fa-save"></i> Resmi İndir</button></li>
                       </ul>
                   </div>
                 

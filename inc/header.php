@@ -215,6 +215,7 @@
         });
 
         $("#siparisleri_gonder_global").click(function(){
+            if( $(document).find(".siparis-item").length == 0 ) return;
             PamiraNotify("info", "İşlem Yapılıyor", "Siparişleriniz gönderiliyor...");
             REQ.ACTION("inc/global_ajax.php", {req:"siparisleri_onayla"}, function(res){
                 if( res.ok ){

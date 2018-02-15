@@ -258,7 +258,7 @@
                                                                  replace("%%TARIH%%", res.data.eklenme_tarihi ).
                                                                  replace("%%SIP_ID%%", res.data.id );
                       } else {
-                          tema = porselen_ozet_tema.html().replace("%%IMG_SRC%%", "<?php echo URL_UPLOADS_PORSELEN?>" + "SGP" + res.data.gid + ".png" ).
+                          tema = porselen_ozet_tema.html().replace("%%IMG_SRC%%", "<?php echo URL_UPLOADS_PORSELEN?>" + res.data.gid + "/SGP.png" ).
                                                        replace("%%EBAT%%", res.data.ebat ).
                                                        replace("%%SERI%%", res.data.seri).
                                                        replace("%%ADET%%", res.data.adet ).

@@ -4,6 +4,7 @@
 	//define("MAIN_DIR", $_SERVER["DOCUMENT_ROOT"] . "/beta/");
 	define("INC_DIR", MAIN_DIR . "inc/");
 	define("CLASS_DIR", INC_DIR . "class/");
+	define("CLASS_DIR_PHPMAIL", CLASS_DIR . "phpmailer/");
 	
 	define("ASSETS_DIR", MAIN_DIR . "assets/");
 	define("IMGS_DIR", ASSETS_DIR . "images/");

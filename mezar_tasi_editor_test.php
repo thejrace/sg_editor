@@ -934,7 +934,7 @@
             });
           
             $("#finito").click(function(){
-                console.log(Siparis);
+                //console.log(Siparis);
                 // editor boşsa kontrol ediyoruz
                 if( Object.size(Siparis.porselenler) == 0 && Object.size(Siparis.yazilar) == 0 && Object.size(Siparis.sekiller) == 0 && Object.size(Siparis.engraveler) == 0 ){
                     if( PNotify.notices.length > 0 ) PNotify.notices[0].remove();
@@ -1138,7 +1138,7 @@
                     alert("Sitemiz kullandığınız tarayıcı versiyonunu desteklemiyor. Lütfen tarayıcınızı güncelleyin.");
                     return false;
                 }
-                console.log("Temp upload başladi");
+                //console.log("Temp upload başladi");
                 var form_data = new FormData();
                 form_data.append("req", "temp_upload");
                 form_data.append("img", temp_file );
@@ -1155,16 +1155,16 @@
                         var res = JSON.parse(obj);
                         if( typeof cb == 'function' ) cb( res );
                         //console.log(res);
-                        console.log("Temp upload tamamlandı.");
+                        ///console.log("Temp upload tamamlandı.");
                     }
                 });
             }
 
             function delete_temp_file( item_id ){
-                console.log("Delete temp file başladı");
+                //console.log("Delete temp file başladı");
                 REQ.ACTION("inc/global_ajax.php", { req:"delete_temp_file", item_id:item_id, parent_gid:Siparis.gid }, function(res){
-                    console.log(res);
-                    console.log("Delete temp file ok");
+                    //console.log(res);
+                    //console.log("Delete temp file ok");
                 });
             }
          
@@ -1368,7 +1368,8 @@
                         item_index: item_id,
                         rotated:this.tas_donuk,
                         top:0,
-                        left:0
+                        left:0,
+                        ext: Siparis.porselen_files[item_id].name.substr( Siparis.porselen_files[item_id].name.lastIndexOf(".")+1 )
                     });  
                     temp_upload( Siparis.porselen_files[item_id], PorselenEditor.temp_canvas, item_id, function(res){
                         Siparis.porselen_files[item_id]["upload_ok"] = res.ok;

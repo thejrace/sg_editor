@@ -35,7 +35,7 @@
       require CLASS_DIR . "BaslikSiparis.php";
       $BaslikSiparis = new BaslikSiparis(Input::get("item_id"));
       if( !$BaslikSiparis->is_ok() ) die("Error obarey");
-      $Porselenler = $BaslikSiparis->get_porselenler();
+
 
       require 'inc/header.php';
       require 'inc/body_header.php';
@@ -75,19 +75,20 @@
 
                       <?php
 
-                          foreach( $Porselenler as $porsdata ){
-
+                          foreach( json_decode($BaslikSiparis->get_details("porselenler"), true)  as $key => $val ){
+                              if( !isset($val["varyant"]) ) $val["varyant"] = "YOK";
+                              if( !isset($val["ext"])) $val["ext"] = "png";
+                              
                               echo '<div class="col-md-4 sipitem">
                                       <div class="col-md-3 col-xs-12 col-sm-12 prev-cont">
-                                          <img src="'.URL_UPLOADS_BASLIK.$porsdata["parent_gid"]."/".$porsdata["parent_item_id"].'_SGP.png" />
+                                          <img src="'.URL_UPLOADS_BASLIK.$BaslikSiparis->get_details("gid")."/".$key.'_cropped.png" />
                                       </div>
                                       <div class="col-md-9 col-xs-12 col-sm-12">
                                           <ul>
-                                              <li>Kod: '.$porsdata["parent_item_id"].'</li>
-                                              <li>Seri: '.$porsdata["seri"].'</li>
-                                              <li>Ebat: '.$porsdata["ebat"].'</li>
-                                              <li>Notlar: '.$porsdata["notlar"].'</li>
-                                              <li><button type="button" class="btn btn-xs btn-info" org-src="'.URL_UPLOADS_BASLIK.$porsdata["parent_gid"]."/".$porsdata["parent_item_id"].'_SGO.'.$porsdata["orjinal_resim_ext"].'"><i class="fa fa-save"></i> Resmi İndir</button></li>
+                                              <li>Seri: '.$val["seri"].'</li>
+                                              <li>Ebat: '.$val["ebat"].'</li>
+                                              <li>Varyant: '.$val["varyant"].'</li>
+                                              <li><button type="button" class="btn btn-xs btn-info" org-src="'.URL_UPLOADS_BASLIK.$BaslikSiparis->get_details("gid")."/".$key.'.'.$val["ext"].'"><i class="fa fa-save"></i> Resmi İndir</button></li>
                                           </ul>
                                       </div>
                                   </div>';
@@ -141,7 +142,8 @@
                                               <ul>
                                                   <li>Kod: '.$key.'</li>
                                                   <li>Yazı: '.$val["text"].'</li>
-                                                  <li>Renk: '.$val["color"].'</li>
+                                                  <li>Arka Plan Renk: '.$val["bg_color"].'</li>
+                                                  <li>Yazı Renk: '.$val["text_color"].'</li>
                                                   <li>Font: '.$val["font"].'</li>
                                               </ul>
                                           </div>
